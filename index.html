@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Who Wants to Be a Math Champion?</title>
+<style>
+:root{--gold:#f6c343;--gold2:#b8801a;--org:#f97316;--grn:#16a34a;--red:#dc2626;--txt:#f6f2e7;--footer-h:clamp(20px,3.2vh,30px);
+--rim:linear-gradient(#ffe9a8,#e0a526 45%,#8f5f0c);
+--face:linear-gradient(#2a2491,#0d0a4d);
+--hexo:polygon(4vh 0,calc(100% - 4vh) 0,100% 50%,calc(100% - 4vh) 100%,4vh 100%,0 50%);
+--hexi:polygon(3.7vh 0,calc(100% - 3.7vh) 0,100% 50%,calc(100% - 3.7vh) 100%,3.7vh 100%,0 50%)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+body{position:fixed;inset:0;width:100%;font-family:"Segoe UI","Trebuchet MS",Verdana,sans-serif;color:var(--txt);background:radial-gradient(ellipse 75% 60% at 50% 40%,#3a34b8 0,#1d1873 40%,#0b0840 75%,#04031c 100%)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 42%,#ffffff12 0 4deg,transparent 4deg 9deg);-webkit-mask-image:radial-gradient(circle at 50% 42%,#000 0,transparent 75%);mask-image:radial-gradient(circle at 50% 42%,#000 0,transparent 75%)}
+button,input{font:inherit}
+button{cursor:pointer;border:0;border-radius:1.2vh;color:#fff;background:#2a2391;padding:1vh 1.8vh;font-weight:700;font-size:2vh}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:.4vh solid #fff;outline-offset:.2vh}
+#ft{position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);display:flex;align-items:center;justify-content:center;font-size:1.7vh;color:#fffc;background:#000b;z-index:50;white-space:nowrap;overflow:hidden;padding:0 1vh}
+#app{position:relative;z-index:1;height:calc(100% - var(--footer-h));height:calc(100dvh - var(--footer-h));display:flex;flex-direction:column;gap:1vh;padding:1vh 1.2vw}
+
+/* gold-rimmed hexagon plates (the look of the answer boxes) */
+.plate{background:var(--rim);padding:.4vh;clip-path:var(--hexo)}
+.pin{clip-path:var(--hexi);background:var(--face)}
+
+/* setup */
+.setup{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.setcard{width:min(94vw,118vh)}
+.setcard .pin{display:flex;flex-direction:column;align-items:center;gap:1vh;padding:3vh 9vh}
+.title{font-size:5.2vh;font-weight:900;text-align:center;line-height:1.1;background:linear-gradient(#fff3c4,#f6c343 50%,#c98a12);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 .3vh 0 #000a)}
+.sub{font-size:2.4vh;color:#d9d4ff;text-align:center}
+.lbl{font-size:2.6vh;font-weight:800;color:var(--gold)}
+.row{display:flex;flex-wrap:wrap;gap:1.2vh;justify-content:center}
+input{background:#0b0840;color:#fff;font-size:3vh;padding:1.2vh 1.6vh;border-radius:1.2vh;border:.4vh solid var(--gold);width:min(40vh,80vw);text-align:center}
+input::placeholder{color:#8f8ac8}
+.opt{background:#2a2391;border:.3vh solid #f6c34388;font-size:2.2vh}
+.opt.on{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;border-color:#fff}
+.big{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;font-size:3.2vh;padding:1.2vh 6vh;border-radius:5vh;font-weight:800;box-shadow:0 .5vh 0 #8f5f0c}
+.big:disabled{box-shadow:none}
+.cc{width:100%;display:flex;flex-direction:column;align-items:center;gap:1vh}
+.cc .stu{font-size:2vh;padding:.7vh 1.4vh;background:#2a2391;border:.3vh solid #f6c34355}
+.cc .stu.on{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;border-color:#fff}
+.cc .stu.dn{opacity:.4;text-decoration:line-through}
+.cc .tm{font-size:2vh;font-weight:800;color:#d9d4ff;margin-top:.4vh}
+.cc .scr{max-height:23vh;overflow:auto;width:100%;display:flex;flex-direction:column;align-items:center;gap:.6vh}
+.cc input{font-size:2.4vh;width:min(26vh,50vw)}
+.cc .ok{color:#8dffb0;font-weight:800;font-size:2.1vh}
+.err{color:#ff9a9a;font-weight:800;min-height:3vh;font-size:2.3vh}
+
+/* top bar */
+.top{display:flex;flex-wrap:wrap;gap:1vh;align-items:center;background:linear-gradient(#0d0a4a,#070530);border:.3vh solid #f6c34366;border-radius:1.6vh;padding:.8vh 1.2vh}
+.who{display:flex;flex-direction:column;line-height:1.1;padding:0 1.4vh;min-width:9vh}
+.who small{font-size:1.5vh;color:#b9b4ff}
+.who b{font-size:3vh;color:var(--gold);max-width:26vh;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp{flex:1}
+.tb{background:#ffffff1f;font-size:1.7vh;padding:.8vh 1.4vh}
+.tmr{width:6.2vh;height:6.2vh;border-radius:50%;border:.4vh solid var(--gold);background:#0b0840;display:flex;align-items:center;justify-content:center}
+.tmr b{font-size:3vh;color:#fff}
+.tmr.low{border-color:#ff5252;animation:beat .5s infinite}
+.tmr.low b{color:#ff8a8a}
+.lfs{display:flex;gap:1.2vh}
+.lf{position:relative;width:9.6vh;height:5.4vh;padding:0;border-radius:50%;background:radial-gradient(ellipse at 50% 25%,#4a43c9,#150f5e);border:.35vh solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.9vh;font-weight:900}
+.lf svg{width:3.4vh;height:3.4vh;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lf:hover:not(:disabled){background:radial-gradient(ellipse at 50% 25%,#6a63e8,#2a2391)}
+.lf:disabled{opacity:.5}
+.lf.x:disabled{opacity:.7}
+.lf.x::before,.lf.x::after{content:"";position:absolute;left:50%;top:50%;width:78%;height:.5vh;background:var(--red);border-radius:1vh}
+.lf.x::before{transform:translate(-50%,-50%) rotate(28deg)}
+.lf.x::after{transform:translate(-50%,-50%) rotate(-28deg)}
+
+/* question area */
+.main{flex:1;min-height:0;display:grid;grid-template-columns:1fr 21vw;gap:1.2vh}
+.qp{display:flex;flex-direction:column;gap:1.2vh;min-height:0;padding:.4vh 0}
+.meta{display:flex;flex-wrap:wrap;gap:1vh;justify-content:center}
+.chip{font-size:1.9vh;font-weight:700;color:#d9d4ff;background:#0b0840cc;border:.25vh solid #f6c34355;border-radius:3vh;padding:.3vh 1.6vh}
+.chip.hot{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;border-color:#fff}
+.tmr b.inf{font-size:4.2vh}
+.rwd{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;border-radius:2.4vh;padding:1.6vh 4vh;display:flex;flex-direction:column;gap:.4vh;align-items:center;max-width:92%}
+.rwd small{font-size:1.8vh;font-weight:800;letter-spacing:.3vh}
+.rwd b{font-size:4.4vh;font-weight:900;line-height:1.1}
+.rwd span{font-size:2.5vh;font-weight:700}
+.chart{height:18vh;display:flex;justify-content:center}
+.chart svg{height:100%;max-width:100%}
+.qplate .pin{display:flex;align-items:center;justify-content:center;min-height:13vh;padding:1.6vh 6.5vh}
+.qt{font-size:3.7vh;font-weight:700;line-height:1.25;text-align:center}
+.qt.long{font-size:3.1vh}
+.opts{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.4vh 2.4vh}
+.opt-b{display:flex;min-height:0;padding:.4vh;border-radius:0;background:var(--rim);clip-path:var(--hexo);color:var(--txt);text-align:left;font-size:3.2vh;font-weight:700}
+.opt-b .in{flex:1;display:flex;align-items:center;gap:1.4vh;padding:0 5vh;clip-path:var(--hexi);background:var(--face);overflow-wrap:anywhere;line-height:1.15}
+.opt-b.sm{font-size:2.6vh}
+.ltr{color:var(--org);font-weight:900}
+.opt-b:hover:not(:disabled) .in{background:linear-gradient(#3a34b8,#1a1570)}
+.opt-b:focus-visible{outline:none}
+.opt-b:focus-visible .in{box-shadow:inset 0 0 0 .5vh #fff}
+.opt-b.sel .in{background:linear-gradient(#ffb347,#f97316);color:#1a0b00}
+.opt-b.sel .ltr{color:#1a0b00}
+.opt-b.ok .in{background:linear-gradient(#3fdc78,#128a3c);color:#04200e}
+.opt-b.ok .ltr{color:#04200e}
+.opt-b.ok{animation:blink .5s 4}
+.opt-b.no .in{background:linear-gradient(#ef4444,#991b1b)}
+.opt-b.no .ltr{color:#fff}
+.opt-b:disabled{opacity:1;cursor:default}
+.opt-b.dim{opacity:.5}
+.opt-b.off{visibility:hidden}
+.exp{min-height:5.5vh;font-size:2.3vh;font-weight:600;text-align:center;color:#e6e2ff}
+.act{display:flex;justify-content:center;gap:1.4vh}
+.act .big{font-size:3vh;padding:1vh 6vh}
+
+/* points ladder */
+.lad{display:flex;flex-direction:column;gap:.5vh;background:linear-gradient(#0d0a4a,#070530);border:.3vh solid #f6c34366;border-radius:1.6vh;padding:1vh;min-height:0}
+.lt{font-size:2vh;font-weight:800;color:var(--gold);text-align:center}
+.rung{flex:1;min-height:0;display:flex;align-items:center;gap:1vh;padding:0 1.4vh;border-radius:3vh;font-size:2.1vh;font-weight:700;color:#f4a53a}
+.rung i{font-style:normal;width:3vh;text-align:right}
+.rung span{flex:1;font-size:1.7vh;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rung.ms{color:#fff;font-weight:800}
+.rung.dn{opacity:.5}
+.rung.on{background:linear-gradient(#ffb347,#f97316);color:#1a0b00;opacity:1}
+
+/* overlays */
+.ov{position:fixed;inset:0 0 var(--footer-h) 0;background:#000c;display:flex;align-items:center;justify-content:center;padding:1.5vh;z-index:10}
+.ov.top2{z-index:30;background:#000a}
+.box{background:linear-gradient(#1a1580,#0a0740);border:.5vh solid var(--gold);border-radius:3vh;padding:2.2vh;width:min(96vw,1150px);max-height:calc(100dvh - var(--footer-h) - 2vh);overflow-y:auto;scrollbar-width:none;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.4vh}
+.q2{font-size:3.4vh;font-weight:700}
+.ans{font-size:5vh;color:var(--gold);font-weight:900}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:1.2vh;text-align:left;width:100%}
+.rg>div{background:#0006;border-radius:1.6vh;padding:1.2vh 1.4vh;font-size:1.85vh;line-height:1.35}
+.rg h3{margin:0 0 .5vh;color:var(--gold);font-size:2.5vh}
+.ok2{background:#16a34a;font-size:3.2vh}.no2{background:#334155;font-size:3.2vh}
+.rk{font-size:3vh;font-weight:800}
+.cf{position:fixed;top:-6vh;width:1.6vh;height:2.6vh;animation:fall 3.2s linear forwards;z-index:40;pointer-events:none}
+@keyframes fall{to{transform:translateY(112vh) rotate(540deg)}}
+@keyframes blink{50%{filter:brightness(1.5)}}
+@keyframes beat{50%{transform:scale(1.12)}}
+@media (max-aspect-ratio:1/1){
+.main{grid-template-columns:1fr}.lad{display:none}
+.opts{grid-template-columns:1fr;grid-template-rows:repeat(4,1fr)}
+.rg{grid-template-columns:1fr}
+.setcard .pin{padding:4.4vh 6vh}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body><div id="app"></div>
+<div id="ft">&copy; 2026 Who Wants to Be a Math Champion | Developed by AMSanjeev (Teach For India Fellow 2026&ndash;28)</div>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+const r=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[r(0,a.length-1)],f=n=>n.toLocaleString('en-US');
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad=n=>String(n).padStart(2,'0'),M5=()=>r(0,11)*5;
+const cmf=x=>[Math.floor(x/100)?Math.floor(x/100)+' m':'',x%100?x%100+' cm':''].filter(Boolean).join(' ')||'0 cm';
+const t24=m=>pad(Math.floor(m/60)%24)+':'+pad(m%60),dur=d=>Math.floor(d/60)+' hr '+d%60+' min';
+// ---------- question builders ----------
+// mk builds one question: the correct answer plus 3 different wrong answers (never negative, never a copy of the answer)
+function mk(cat,q,a,wr,e,ch){a=String(a);wr=[...new Set(wr.map(String))].filter(x=>x!==a&&!x.startsWith('-'));while(wr.length<3){const c=String(r(2,99)*7);if(c!==a&&!wr.includes(c))wr.push(c)}const o=shuf([a,...wr.slice(0,3)]);return{cat,q,o,a:o.indexOf(a),e,ch}}
+const GS=[
+[['Which angle measures exactly 90 degrees?','Right angle',['Acute angle','Obtuse angle','Straight angle'],'A right angle is exactly 90 degrees, like the corner of a book.'],
+['Which angle is smaller than 90 degrees?','Acute angle',['Right angle','Obtuse angle','Straight angle'],'An acute angle is smaller than 90 degrees.'],
+['How many right angles does a square have?','4',['2','3','6'],'Every corner of a square is a right angle, so it has 4.'],
+['Which solid has 6 square faces?','Cube',['Cone','Cylinder','Sphere'],'A cube has 6 equal square faces.']],
+[['Which angle is greater than 90 degrees but less than 180 degrees?','Obtuse angle',['Acute angle','Right angle','Straight angle'],'An obtuse angle is between 90 and 180 degrees.'],
+['A straight angle measures how many degrees?','180 degrees',['90 degrees','360 degrees','45 degrees'],'A straight line makes a 180 degree angle.'],
+['How many faces does a cuboid have?','6',['4','8','12'],'A cuboid has 6 rectangular faces.'],
+['How many corners (vertices) does a cube have?','8',['4','6','12'],'A cube has 8 corners.']],
+[['Which of these is an acute angle?','65 degrees',['90 degrees','120 degrees','180 degrees'],'Acute angles are smaller than 90 degrees.'],
+['How many edges does a cube have?','12',['6','8','10'],'A cube has 12 edges.'],
+['A full turn is how many degrees?','360 degrees',['180 degrees','90 degrees','270 degrees'],'One complete turn is 360 degrees.'],
+['Which of these is an obtuse angle?','135 degrees',['45 degrees','90 degrees','180 degrees'],'Obtuse angles are between 90 and 180 degrees.']],
+[['Looking straight down at the top of a cube, which shape do you see?','Square',['Triangle','Circle','Pentagon'],'The top face of a cube is a square.'],
+['Which solid has one curved surface and one flat circular face?','Cone',['Cylinder','Sphere','Cube'],'A cone has a curved surface and one circular base.'],
+['How many flat faces does a cylinder have?','2',['1','3','0'],'A cylinder has a flat circle at the top and bottom.'],
+['A cube is viewed from the front, the side and the top. How do the views compare?','All three views are squares',['All three views are circles','All three views are triangles','Each view is a different shape'],'Every face of a cube is a square.']],
+[['What is the greatest number of faces of a cube you can see at once?','3',['6','4','2'],'From one corner you can see 3 faces at most.'],
+['A half turn plus a quarter turn makes how many degrees?','270 degrees',['180 degrees','90 degrees','360 degrees'],'180 + 90 = 270 degrees.'],
+['Which of these is a reflex angle?','250 degrees',['90 degrees','150 degrees','180 degrees'],'A reflex angle is more than 180 degrees.'],
+['A cuboid is 4 cm long, 3 cm wide and 2 cm high. How many of its faces are squares?','0',['2','4','6'],'All sides are different, so every face is a rectangle, not a square.']]];
+const G=l=>()=>{const x=pick(GS[l]);return mk('Geometry',x[0],x[1],x[2],x[3])};
+const N=['ones','tens','hundreds','thousands','ten thousands'];
+const OLD=[
+[G(0),
+// place value: the chosen digit appears only ONCE in the number, so the question has exactly one answer
+()=>{let n,p,d;do{n=r(10000,99999);p=r(0,4);d=+String(n)[4-p]}while(d==0||String(n).split(String(d)).length!=2);
+const v=d*10**p,all=[0,1,2,3,4].filter(k=>k!=p).map(k=>d*10**k),w=p>0?[d,...shuf(all.filter(x=>x!=d)).slice(0,2)]:shuf(all).slice(0,3);
+return mk('Numbers',`What is the place value of ${d} in ${f(n)}?`,f(v),w.map(f),`The digit ${d} is in the ${N[p]} place, so its place value is ${f(v)}.`)},
+// expanded form: at least 3 non-zero digits so there are always 3 sensible wrong answers
+()=>{let n,P;do{n=r(10000,99999);P=[];String(n).split('').forEach((c,i)=>{if(c!='0')P.push(+c*10**(4-i))})}while(P.length<3);
+const J=a=>a.map(f).join(' + '),V=[];P.forEach((x,i)=>{const up=[...P];up[i]=x*10;V.push(J(up));if(x>=10){const dn=[...P];dn[i]=x/10;V.push(J(dn))}});
+return mk('Numbers',`Which is the expanded form of ${f(n)}?`,J(P),shuf(V).slice(0,3),'Split the number by place value: '+J(P)+'.')},
+()=>{const s=r(1,20),d=pick([2,3,4,5,6,7,8,9,10,25]),a=[0,1,2,3].map(i=>s+i*d),n=s+4*d;return mk('Patterns',`What comes next?  ${a.join(', ')}, __`,n,[n+d,n+1,n-1,n+2,n-2,n+2*d],`The pattern adds ${d} each time, so ${a[3]} + ${d} = ${n}.`)},
+()=>{const a=r(2,9),b=r(1,19)*50;return mk('Measurements',`Convert ${a} km ${b} m into metres.`,f(a*1000+b),[f(a*100+b),f(a*10000+b),f(a*1000+b*10),f(a+b),f(a*1000+b/10)],`1 km = 1,000 m, so ${a} km = ${f(a*1000)} m. Add ${b} m.`)},
+()=>{const h=r(2,9);return mk('Time',`How many minutes are in ${h} hours?`,h*60,[h*100,h*30,h*24,h*12,h*60+60],`1 hour = 60 minutes, so ${h} x 60 = ${h*60}.`)},
+()=>{const n=r(6,23);return mk('Information Processing','How many does this tally chart show?',n,[n+1,n-1,n+5,n-5,n+2],'Each group of 5 shows 5. Count the groups, then add the extra lines.',{t:'tally',n})}],
+[G(1),
+()=>{const d=shuf([1,2,3,4,5,6,7,8,9]).slice(0,5),U=new Set();while(U.size<4)U.add(+shuf(d).join(''));const a=[...U],g=Math.random()<.5,ans=g?Math.max(...a):Math.min(...a);return mk('Numbers',`Which is the ${g?'greatest':'smallest'} number?`,f(ans),a.filter(x=>x!=ans).map(f),'Compare the digits from the left, starting with the ten thousands.')},
+()=>{const a=r(100,999),b=r(100,999),s=a+b;return mk('Numbers',`Calculate ${a} + ${b}.`,f(s),[s+10,s-10,s+100,s-100,s+1].map(f),'Add the ones, tens and hundreds, carrying when needed.')},
+()=>{const s=r(2,20),d=pick([3,4,5,6,7,8,9,10]),t=[0,1,2,3,4].map(i=>s+i*d),m=t[2];return mk('Patterns',`Find the missing number: ${t[0]}, ${t[1]}, __, ${t[3]}, ${t[4]}`,m,[m+1,m-1,m+2,m-2,m+d-1,m-d+1],`The pattern adds ${d} each time: ${t[1]} + ${d} = ${m}.`)},
+()=>{const a=r(1,6),b=r(2,18)*5,c=r(1,5),d=r(2,18)*5,t=a*100+b+c*100+d;return mk('Measurements',`Find ${a} m ${b} cm + ${c} m ${d} cm.`,cmf(t),[cmf(t+10),cmf(t-10),cmf(t+100),cmf(t-100),(a+c)+' m '+(b+d)+' cm'],'Add the centimetres first. 100 cm = 1 m, so regroup if needed.')},
+()=>{const h=r(13,23),m=M5(),H=h-12,w=x=>((x+11)%12)+1;return mk('Time',`A train leaves at ${pad(h)}:${pad(m)}. What is this in normal 12-hour time?`,`${H}:${pad(m)} PM`,[`${H}:${pad(m)} AM`,`${w(H+2)}:${pad(m)} PM`,`${w(H-2)}:${pad(m)} PM`,`${w(H+1)}:${pad(m)} PM`,`${w(H+11)}:${pad(m)} AM`],'Subtract 12 from the hour for times after 12:00. It is PM.')},
+()=>{const T=['A','B','C','D'],v=shuf([...Array(40).keys()].map(x=>x+6)).slice(0,4),hi=v.indexOf(Math.max(...v));return mk('Information Processing','The bar graph shows books read by four teams. Which team read the most books?','Team '+T[hi],T.filter((_,i)=>i!=hi).map(x=>'Team '+x),`The tallest bar is the highest: Team ${T[hi]} with ${v[hi]}.`,{t:'bar',l:T.map(x=>'Team '+x),v})}],
+[G(2),
+// clock angle: the reflex angle (360 - angle) is removed from the wrong answers so it can never be a second correct answer
+()=>{const h=r(2,6),a=h*30;return mk('Geometry',`What is the angle between the clock hands at ${h} o'clock?`,a+' degrees',[a+30,a-30,a+60,a+90,a-60].filter(x=>x>0&&x!=360-a).map(x=>x+' degrees'),`Each hour on a clock is 30 degrees. ${h} x 30 = ${a} degrees.`)},
+()=>{const a=r(1000,6999),b=r(1000,6999),s=a+b;return mk('Numbers',`Calculate ${f(a)} + ${f(b)}.`,f(s),[s+10,s-10,s+100,s-100,s+1000,s-1000].map(f),'Add place by place from the ones, carrying when needed.')},
+()=>{const a=r(50000,99999),b=r(10000,a-10000),s=a-b;return mk('Numbers',`Find ${f(a)} - ${f(b)}.`,f(s),[s+10,s-10,s+100,s-100,s+1000,s-1000].map(f),'Subtract place by place and regroup when a digit is too small.')},
+()=>{const s=r(1,6),k=pick([2,3]),t=[0,1,2,3].map(i=>s*k**i),n=s*k**4;return mk('Patterns',`What comes next?  ${t.join(', ')}, __`,n,[n+s,n-s,t[3]+k,n*k,n+k],`Each number is multiplied by ${k}: ${t[3]} x ${k} = ${n}.`)},
+()=>{const a=r(3,9),c=r(1,a-1),b=r(1,8)*5,d=r(b/5+1,19)*5,t=(a*100+b)-(c*100+d);return mk('Measurements',`Find ${a} m ${b} cm - ${c} m ${d} cm.`,cmf(t),[cmf(t+10),cmf(t-10),cmf(t+100),cmf(t-100),(a-c)+' m '+(d-b)+' cm'],'Change 1 m into 100 cm when the centimetres are too small, then subtract.')},
+()=>{const s=r(6,15)*60+M5(),h=r(1,4),m=M5(),e=s+h*60+m;return mk('Time',`A train leaves at ${t24(s)} and travels for ${h} hr ${m} min. When does it arrive?`,t24(e),[t24(e+10),t24(e-10),t24(e+60),t24(e-60),t24(e+20)],`Add the hours first: ${t24(s)} + ${h} hr = ${t24(s+h*60)}. Then add ${m} min.`)},
+()=>{const k=pick([2,3,4,5,10]),n=r(3,9),a=n*k;return mk('Information Processing',`In a pictograph, one circle stands for ${k} goals. How many goals do ${n} circles stand for?`,a,[a+k,a-k,n+k,a+1,a*2],`${n} x ${k} = ${a}.`,{t:'pict',n})}],
+[G(3),
+()=>{const b=r(12,45),p=r(110,260),t=b*p;return mk('Numbers',`A school has ${b} boxes with ${p} pencils in each box. How many pencils are there altogether?`,f(t),[t+100,t-100,t+1000,t-1000,t+p,t-p].map(f),`${b} x ${p} = ${f(t)}.`)},
+()=>{const a=r(1,5),d=r(2,5),k=r(1,3),t=[a];let df=d;for(let i=0;i<4;i++){t.push(t[i]+df);df+=k}const n=t[4]+df;return mk('Patterns',`Find the next number:  ${t.join(', ')}, __`,n,[n+k,n-k,n+1,n-1,n+2*k],`The gaps grow by ${k} each time. The next gap is ${df}, so ${t[4]} + ${df} = ${n}.`)},
+()=>{const a=r(2,6),b=r(1,9)*10,n=r(3,6),t=(a*100+b)*n;return mk('Measurements',`Find ${a} m ${b} cm x ${n}.`,cmf(t),[cmf(t+10),cmf(t-10),cmf(t+100),cmf(t-100),(a*n)+' m '+(b*n)+' cm'],'Change to centimetres, multiply, then change back to metres and centimetres.')},
+()=>{const s=r(6,11)*60+r(0,10)*5,h=r(2,5),m=r(1,11)*5,e=s+h*60+m;return mk('Time',`A train leaves at ${t24(s)} and arrives at ${t24(e)}. How long is the journey?`,dur(h*60+m),[dur(h*60+m+10),dur(h*60+m-10),dur((h+1)*60+m),dur((h-1)*60+m),dur(h*60+60-m)],`Count the hours, then the minutes, from ${t24(s)} to ${t24(e)}.`)},
+// bar graph difference: wrong answers are always above zero
+()=>{const T=['A','B','C','D'],v=shuf([...Array(30).keys()].map(x=>x+8)).slice(0,4);let i=r(0,3),j=(i+r(1,3))%4;if(v[i]<v[j])[i,j]=[j,i];const d=v[i]-v[j];return mk('Information Processing',`The bar graph shows books read. How many more books did Team ${T[i]} read than Team ${T[j]}?`,d,[d+1,d+2,d+3,d-1,d-2,v[i]+v[j]].filter(x=>x>0),`${v[i]} - ${v[j]} = ${d}.`,{t:'bar',l:T.map(x=>'Team '+x),v})},
+()=>{const s=r(2,5),t=r(2,4);return mk('Information Processing',`A team has ${s} different shirts and ${t} different shorts. How many different outfits (1 shirt and 1 shorts) can be listed?`,s*t,[s+t,s*t+1,s*t-1,s*t+2,s*t*2],`List every shirt with every shorts: ${s} x ${t} = ${s*t}.`)}],
+[G(4),
+()=>{const p=r(120,260),n=r(12,40),g=r(100,900),t=p*n-g;return mk('Numbers',`A school buys ${n} boxes with ${p} pencils in each box. It gives away ${g} pencils. How many pencils are left?`,f(t),[t+g*2,p*n+g,t+100,t-100,t+1000,p*n].map(f),`First ${n} x ${p} = ${f(p*n)}. Then subtract ${g}: ${f(t)}.`)},
+()=>{const n=r(6,12);return mk('Patterns',`Squares are made in a row with matchsticks. 1 square uses 4 sticks, 2 squares use 7, 3 squares use 10. How many sticks are needed for ${n} squares?`,3*n+1,[3*n,4*n,3*n+2,3*n-1,3*n+4],`The first square needs 4 sticks and every new square adds 3. So 4 + 3 x ${n-1} = ${3*n+1}.`)},
+()=>{const n=pick([4,5,8,10]),p=r(5,40)*5,t=p*n;return mk('Measurements',`A ribbon is ${cmf(t)} long. It is cut into ${n} equal pieces. How long is each piece?`,cmf(p),[cmf(p+10),cmf(p-10),cmf(p+25),cmf(p*2),cmf(p+50)],`${cmf(t)} = ${f(t)} cm. ${f(t)} divided by ${n} = ${p} cm.`)},
+()=>{const s=r(6,14)*60+M5(),h=r(1,3),m=M5(),w=r(2,6)*5,e=s+h*60+m+w;return mk('Time',`A train leaves at ${t24(s)}. The journey takes ${h} hr ${m} min and it also waits ${w} min at a station. When does it arrive?`,t24(e),[t24(e-w),t24(e+w),t24(e+10),t24(e-10),t24(e+60)],`Add the journey time and the waiting time to ${t24(s)}.`)},
+()=>{const T=['A','B','C','D'],v=[0,1,2,3].map(()=>r(8,40)),s=v[0]+v[1]+v[2]+v[3];return mk('Information Processing','The bar graph shows books read. How many books did all four teams read altogether?',s,[s+1,s-1,s+5,s-5,s+10,s-10],`Add all four bars: ${v.join(' + ')} = ${s}.`,{t:'bar',l:T.map(x=>'Team '+x),v})}]];
+// ---------- difficulty ladder ----------
+// Level 1 (Rookie) is brand new and very easy: small numbers, one-step ideas.
+// Levels 2-4 reuse the original question sets, one step later, so difficulty climbs steadily.
+// Level 5 (Champion) mixes the two hardest sets (multi-step word problems).
+const EASY=[G(0),
+()=>{let n,p,d;do{n=r(100,999);p=r(0,2);d=+String(n)[2-p]}while(d==0||String(n).split(String(d)).length!=2);
+const v=d*10**p,all=[0,1,2,3].filter(k=>k!=p).map(k=>d*10**k),w=p>0?[d,...shuf(all.filter(x=>x!=d)).slice(0,2)]:shuf(all).slice(0,3);
+return mk('Numbers',`What is the place value of ${d} in ${n}?`,f(v),w.map(f),`The digit ${d} is in the ${N[p]} place, so its place value is ${f(v)}.`)},
+()=>{const s=r(1,10),d=pick([2,3,5,10]),a=[0,1,2,3].map(i=>s+i*d),n=s+4*d;return mk('Patterns',`What comes next?  ${a.join(', ')}, __`,n,[n+d,n-d,n+1,n-1,n+2],`The pattern adds ${d} each time, so ${a[3]} + ${d} = ${n}.`)},
+()=>{const a=r(11,59),b=r(11,40),t=a+b;return mk('Numbers',`Calculate ${a} + ${b}.`,t,[t+10,t-10,t+1,t-1,t+2],'Add the ones first, then add the tens.')},
+()=>{const a=r(40,99),b=r(11,a-11),t=a-b;return mk('Numbers',`Calculate ${a} - ${b}.`,t,[t+10,t-10,t+1,t-1,t+2],'Subtract the ones, then subtract the tens.')},
+()=>{const m=r(2,9);return mk('Measurements',`Convert ${m} m into centimetres.`,f(m*100),[m*10,m*1000,m+100,m*100+10,m*100-10].map(f),`1 m = 100 cm, so ${m} x 100 = ${m*100} cm.`)},
+()=>{const s=r(1,8),d=r(1,3),e=s+d;return mk('Time',`A class starts at ${s}:00 and lasts ${d} hour${d>1?'s':''}. At what time does it end?`,`${e}:00`,[`${e+1}:00`,`${e-1}:00`,`${e}:30`,`${s}:30`],`${s}:00 plus ${d} hour${d>1?'s':''} is ${e}:00.`)},
+()=>{const n=r(3,12);return mk('Information Processing','How many does this tally chart show?',n,[n+1,n-1,n+5,n+2,n-2],'Each group of 5 shows 5. Count the groups, then add the extra lines.',{t:'tally',n})},
+()=>{const k=pick([2,5,10]),n=r(2,5),a=n*k;return mk('Information Processing',`In a pictograph, one circle stands for ${k} goals. How many goals do ${n} circles stand for?`,a,[a+k,a-k,n+k,a+1,a*2],`${n} x ${k} = ${a}.`,{t:'pict',n})}];
+const nG=a=>a.slice(1); // drop the geometry builder, each level gets its own geometry set below
+const A=[EASY,[G(1),...nG(OLD[0])],[G(2),...nG(OLD[1])],[G(3),...nG(OLD[2])],[G(4),...nG(OLD[3]),...nG(OLD[4])]];
+// ---------- EXTRA QUESTION BANK: 20 more questions for every topic at every level ----------
+// Each builder makes a fresh random question; numbers scale with the level (0 = Rookie ... 4 = Champion).
+const MG=[[2,20],[10,99],[100,999],[1000,9999],[10000,99999]],NMS=['Asha','Ravi','Meera','Kabir','Zoya','Arjun'],DYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const K=c=>(q,a,e,ch,x)=>mk(c,q,f(a),Array.isArray(x)?x.map(f):[a+(x||1),a-(x||1),a+2*(x||1),a-2*(x||1),a+10*(x||1),a*2].filter(y=>y>=0).map(f),e,ch);
+const XB=L=>{const g=()=>r(...MG[L]),h=[5,9,12,20,30][L],H=[9,12,25,60,120][L],v=()=>r(2,[9,20,50,90,150][L]),nm=()=>pick(NMS),st=[10,10,5,5,1][L],ang=()=>r(1,Math.floor(89/st))*st,
+nu=K('Numbers'),pa=K('Patterns'),me=K('Measurements'),ti=K('Time'),ip=K('Information Processing'),
+sq=(s,d,n)=>Array.from({length:n},(_,i)=>s+i*d),
+bv=()=>{const m=[1,1,2,3,5][L];return shuf([...Array(40).keys()].map(x=>(x+3)*m)).slice(0,4)},TL=['A','B','C','D'],
+bar=()=>{const v=bv();return[v,{t:'bar',l:TL.map(x=>'Team '+x),v}]},
+AT=['Acute angle','Right angle','Obtuse angle','Straight angle','Reflex angle'],
+SO=[['cube',6,8,12],['cuboid',6,8,12],['triangular prism',5,6,9],['square pyramid',5,5,8]];
+return{
+Numbers:[
+()=>{const a=g(),b=g();return nu(`Calculate ${f(a)} + ${f(b)}.`,a+b,'Add place by place, carrying when needed.')},
+()=>{let a=g(),b=g();if(a<b)[a,b]=[b,a];return nu(`Calculate ${f(a)} - ${f(b)}.`,a-b,'Subtract place by place, regrouping when needed.')},
+()=>{const a=r(2,H),b=r(2,h);return nu(`Calculate ${a} x ${b}.`,a*b,`${a} x ${b} = ${a*b}.`,0,[a*b+a,a*b-a,a*b+b,a*b-b,a+b])},
+()=>{const b=r(2,h),q=r(2,H);return nu(`Calculate ${f(b*q)} divided by ${b}.`,q,`${b} x ${q} = ${b*q}, so ${b*q} divided by ${b} = ${q}.`)},
+()=>{const a=g(),b=g();return nu(`${f(a)} + __ = ${f(a+b)}. Find the missing number.`,b,`Subtract: ${f(a+b)} - ${f(a)} = ${f(b)}.`)},
+()=>{const a=g();return nu(`What is double ${f(a)}?`,a*2,`Double means x 2, so ${f(a)} x 2 = ${f(a*2)}.`)},
+()=>{const a=g();return nu(`What is half of ${f(a*2)}?`,a,`Half means divide by 2, so ${f(a*2)} divided by 2 = ${f(a)}.`)},
+()=>{const a=g();return nu(`Which number comes just after ${f(a)}?`,a+1,`Add 1: ${f(a)} + 1 = ${f(a+1)}.`)},
+()=>{const a=g();return nu(`Which number comes just before ${f(a)}?`,a-1,`Subtract 1: ${f(a)} - 1 = ${f(a-1)}.`)},
+()=>{const a=g(),b=g(),c=g();return nu(`Calculate ${f(a)} + ${f(b)} + ${f(c)}.`,a+b+c,'Add the first two numbers, then add the third.')},
+()=>{const a=g(),b=g();return nu(`${nm()} has ${f(a)} marbles and wins ${f(b)} more. How many marbles now?`,a+b,`${f(a)} + ${f(b)} = ${f(a+b)}.`)},
+()=>{let a=g(),b=g();if(a<b)[a,b]=[b,a];return nu(`A shop has ${f(a)} pencils and sells ${f(b)}. How many are left?`,a-b,`${f(a)} - ${f(b)} = ${f(a-b)}.`)},
+()=>{const a=r(2,H),b=r(2,h);return nu(`${b} bags each hold ${a} sweets. How many sweets are there altogether?`,a*b,`${b} x ${a} = ${a*b}.`,0,[a*b+a,a*b-a,a*b+b,a*b-b,a+b])},
+()=>{const b=r(2,h),q=r(2,H);return nu(`${nm()} shares ${f(b*q)} stickers equally among ${b} friends. How many does each friend get?`,q,`${f(b*q)} divided by ${b} = ${q}.`)},
+()=>{const k=pick([2,3,4,5]),a=r(2,H);return nu(`What is 1/${k} of ${f(a*k)}?`,a,`Divide ${f(a*k)} into ${k} equal parts. Each part is ${a}.`)},
+()=>{const a=g();return nu(`Round ${f(a)} to the nearest ten.`,Math.round(a/10)*10,'Look at the ones digit. 5 or more rounds up, less than 5 rounds down.',0,10)},
+()=>{const a=g();return nu(`Round ${f(a)} to the nearest hundred.`,Math.round(a/100)*100,'Look at the tens digit. 5 or more rounds up, less than 5 rounds down.',0,100)},
+()=>{const a=g();return nu(`How many tens are in ${f(a*10+r(0,9))}?`,a,'Ignore the ones digit and read the rest of the number.')},
+()=>{const a=g();return nu(`What is 10 more than ${f(a)}?`,a+10,'Add 10 to the number.',0,10)},
+()=>{const a=g();return nu(`What is 100 more than ${f(a)}?`,a+100,'Add 100 to the number.',0,100)}],
+Patterns:[
+()=>{const s=r(1,[10,30,100,500,1000][L]),d=r(2,[5,9,12,20,50][L]),t=sq(s,d,4);return pa(`What comes next?  ${t.map(f).join(', ')}, __`,s+4*d,`The pattern adds ${d} each time.`)},
+()=>{const d=r(2,[5,9,12,20,50][L]),s=d*r(6,12),t=sq(s,-d,4);return pa(`What comes next?  ${t.map(f).join(', ')}, __`,s-4*d,`The pattern subtracts ${d} each time.`)},
+()=>{const s=r(1,[10,30,100,500,1000][L]),d=r(2,[5,9,12,20,50][L]),t=sq(s,d,5);return pa(`Find the missing number:  ${f(t[0])}, ${f(t[1])}, __, ${f(t[3])}, ${f(t[4])}`,t[2],`The pattern adds ${d} each time.`)},
+()=>{const s=r(1,[10,30,100,500,1000][L]),d=r(2,[5,9,12,20,50][L]),t=sq(s,d,5);return pa(`Find the missing number:  __, ${f(t[1])}, ${f(t[2])}, ${f(t[3])}, ${f(t[4])}`,t[0],`Each number is ${d} less than the next, so ${f(t[1])} - ${d} = ${f(t[0])}.`)},
+()=>{const s=r(1,20),d=r(2,[5,9,12,20,50][L]),n=r(5,9);return pa(`A pattern starts at ${s} and adds ${d} each time. What is the ${n}th number?`,s+(n-1)*d,`The ${n}th number is ${s} + ${n-1} x ${d} = ${s+(n-1)*d}.`)},
+()=>{const d=r(2,[5,9,12,20,50][L]),n=r(4,10);return pa(`Count in ${d}s starting from ${d}. What is the ${n}th number?`,d*n,`The ${n}th number is ${n} x ${d} = ${d*n}.`)},
+()=>{const s=r(1,5),k=pick([2,3]),t=sq(0,1,4).map(i=>s*k**i);return pa(`What comes next?  ${t.join(', ')}, __`,s*k**4,`Each number is multiplied by ${k}.`)},
+()=>{const b=r(1,5),q=pick([2,3]),t=[4,3,2,1].map(i=>b*q**i);return pa(`What comes next?  ${t.join(', ')}, __`,b,`Each number is divided by ${q}.`)},
+()=>{const s=r(1,9),d=r(1,[2,3,4,5,6][L]),t=[0,1,2,3].map(i=>s+d*i*(i+1)/2);return pa(`What comes next?  ${t.join(', ')}, __`,s+d*10,`The gaps are ${d}, ${2*d}, ${3*d}, so the next gap is ${4*d}.`)},
+()=>{const x=g(),d=r(2,[5,9,12,20,50][L]);return pa(`A machine adds ${d} to every number. Input: ${f(x)}. Output?`,x+d,`${f(x)} + ${d} = ${f(x+d)}.`)},
+()=>{const x=r(2,H),k=r(2,h);return pa(`A machine multiplies every number by ${k}. Input: ${x}. Output?`,x*k,`${x} x ${k} = ${x*k}.`)},
+()=>{const x=g(),d=r(2,[5,9,12,20,50][L]);return pa(`A machine changes ${f(x)} into ${f(x+d)}. What number does it add?`,d,`${f(x+d)} - ${f(x)} = ${d}.`)},
+()=>{const x=r(2,H),k=r(2,9),c=r(1,20);return pa(`A machine multiplies by ${k} and then adds ${c}. Input: ${x}. Output?`,x*k+c,`${x} x ${k} = ${x*k}, then + ${c} = ${x*k+c}.`,0,[x*k+c+k,x*k-c,x*k,x*(k+c),x+k+c,x*k+c-1])},
+()=>{const d=r(2,[5,9,12,20,50][L]),n=r(3,9);return pa(`${nm()} saves ${d} rupees every day. How many rupees after ${n} days?`,d*n,`${d} x ${n} = ${d*n}.`)},
+()=>{const s=r(10,50),d=r(2,[5,9,12,20,50][L]),n=r(3,9);return pa(`A plant is ${s} cm tall and grows ${d} cm every week. How tall is it after ${n} weeks?`,s+d*n,`${s} + ${n} x ${d} = ${s+d*n} cm.`)},
+()=>{const n=r(4,12);return pa(`1 triangle uses 3 sticks, 2 triangles in a row use 5, 3 triangles use 7. How many sticks for ${n} triangles?`,2*n+1,`Each new triangle adds 2 sticks: 3 + 2 x ${n-1} = ${2*n+1}.`)},
+()=>{const n=r(4,12);return pa(`1 table seats 4 children. Each extra table joined in a row adds 2 seats. How many children sit at ${n} tables?`,2*n+2,`4 + 2 x ${n-1} = ${2*n+2}.`)},
+()=>{const n=r(3,[9,20,50,90,150][L]);return pa(`What is the ${n}th even number?`,2*n,`The ${n}th even number is ${n} x 2 = ${2*n}.`)},
+()=>{const n=r(3,[9,20,50,90,150][L]);return pa(`What is the ${n}th odd number?`,2*n-1,`The ${n}th odd number is ${n} x 2 - 1 = ${2*n-1}.`)},
+()=>{const s=r(1,9),d=r(2,[5,9,12,20,50][L]),m=r(3,8),t=sq(s,d,3);return pa(`Which number is in this pattern?  ${t.join(', ')}, ...`,s+m*d,`Every number in the pattern is ${s} plus a multiple of ${d}.`,0,[s+m*d+1,s+m*d-1,s+m*d+2,s+m*d-2])}],
+Measurements:[
+()=>{const a=v();return me(`Convert ${a} km into metres.`,a*1000,'1 km = 1,000 m.',0,[a*100,a*10000,a+1000,a*10])},
+()=>{const a=v();return me(`Convert ${a} m into centimetres.`,a*100,'1 m = 100 cm.',0,[a*10,a*1000,a+100,a*100+10])},
+()=>{const a=v();return me(`Convert ${a} cm into millimetres.`,a*10,'1 cm = 10 mm.',0,[a*100,a+10,a*10+10,a*10-10])},
+()=>{const a=v();return me(`Convert ${a} kg into grams.`,a*1000,'1 kg = 1,000 g.',0,[a*100,a*10000,a+1000,a*10])},
+()=>{const a=v();return me(`Convert ${a} litres into millilitres.`,a*1000,'1 litre = 1,000 ml.',0,[a*100,a*10000,a+1000,a*10])},
+()=>{const a=v();return me(`Convert ${f(a*1000)} m into kilometres.`,a,'1,000 m = 1 km, so divide by 1,000.',0,[a*10,a*100,a+1,a-1])},
+()=>{const a=v();return me(`Convert ${f(a*100)} cm into metres.`,a,'100 cm = 1 m, so divide by 100.',0,[a*10,a*100,a+1,a-1])},
+()=>{const a=v();return me(`Convert ${f(a*1000)} g into kilograms.`,a,'1,000 g = 1 kg, so divide by 1,000.',0,[a*10,a*100,a+1,a-1])},
+()=>{const a=v();return me(`Convert ${f(a*1000)} ml into litres.`,a,'1,000 ml = 1 litre, so divide by 1,000.',0,[a*10,a*100,a+1,a-1])},
+()=>{const a=g()*5,b=g()*5;return me(`A rope is ${f(a)} cm long and another is ${f(b)} cm long. What is their total length in cm?`,a+b,`${f(a)} + ${f(b)} = ${f(a+b)}.`,0,10)},
+()=>{let a=g()*5,b=g()*5;if(a<b)[a,b]=[b,a];return me(`A pole is ${f(a)} cm long. ${f(b)} cm is cut off. How many cm are left?`,a-b,`${f(a)} - ${f(b)} = ${f(a-b)}.`,0,10)},
+()=>{const a=r(2,H),b=r(2,h);return me(`Each plank is ${a} cm long. ${b} planks are placed end to end. How long is the row in cm?`,a*b,`${a} x ${b} = ${a*b} cm.`,0,[a*b+a,a*b-a,a*b+b,a*b-b,a+b])},
+()=>{const b=r(2,h),p=r(2,H);return me(`A ribbon ${f(b*p)} cm long is cut into ${b} equal pieces. How long is each piece in cm?`,p,`${f(b*p)} divided by ${b} = ${p} cm.`)},
+()=>{const s=v();return me(`What is the perimeter of a square with sides of ${s} cm?`,4*s,`4 x ${s} = ${4*s} cm.`,0,[2*s,s*s,3*s,4*s+2,s+4])},
+()=>{const l=r(3,[9,20,50,90,150][L]+3),w=r(2,l-1);return me(`What is the perimeter of a rectangle ${l} cm long and ${w} cm wide?`,2*(l+w),`2 x (${l} + ${w}) = ${2*(l+w)} cm.`,0,[l+w,l*w,2*l+w,l+2*w,2*(l+w)+2])},
+()=>{const a=v(),b=v(),c=v();return me(`A triangle has sides of ${a} cm, ${b} cm and ${c} cm. What is its perimeter in cm?`,a+b+c,`Add all three sides: ${a} + ${b} + ${c} = ${a+b+c}.`,0,[a+b,b+c,a+c,a*b*c%100+a+b+c])},
+()=>{const n=r(2,h),g2=r(2,[5,9,12,20,50][L])*10;return me(`${n} packets weigh ${g2} g each. What is the total weight in grams?`,n*g2,`${n} x ${g2} = ${n*g2} g.`,0,[n*g2+g2,n*g2-g2,n*g2+10,n*g2-10,n+g2])},
+()=>{const a=r(1,[9,12,20,30,50][L]);return me(`How many 250 ml glasses can be filled from ${a} litre${a>1?'s':''} of juice?`,4*a,`1 litre = 4 glasses of 250 ml, so ${a} x 4 = ${4*a}.`,0,[2*a,5*a,a+4,8*a])},
+()=>{const a=r(10,99),b=r(2,h);return me(`1 kg of rice costs Rs ${a}. What is the cost of ${b} kg?`,a*b,`${a} x ${b} = Rs ${a*b}.`,0,[a*b+a,a*b-a,a*b+b,a+b])},
+()=>{let x=r(1,9),y=r(100,1000);if(x*100==y)y+=10;const w=x*100>y?x+' m':y+' cm';return mk('Measurements',`Which is longer: ${x} m or ${y} cm?`,w,[x*100>y?y+' cm':x+' m','They are equal','Cannot tell'],`${x} m = ${x*100} cm. Compare ${x*100} cm with ${y} cm.`)}],
+Time:[
+()=>{const a=r(2,[9,12,24,48,72][L]);return ti(`How many minutes are in ${a} half-hours?`,a*30,`1 half-hour = 30 minutes, so ${a} x 30 = ${a*30}.`,0,[a*60,a*15,a*20,a*30+30])},
+()=>{const a=r(2,[9,12,24,48,72][L]);return ti(`How many minutes are in ${a} hours?`,a*60,`${a} x 60 = ${a*60}.`,0,[a*100,a*30,a*24,a*60+60])},
+()=>{const a=r(2,[9,12,24,48,72][L]);return ti(`How many hours are in ${f(a*60)} minutes?`,a,`${f(a*60)} divided by 60 = ${a}.`,0,[a*60,a+1,a-1,a*6])},
+()=>{const a=r(2,[3,5,7,10,14][L]);return ti(`How many hours are in ${a} days?`,a*24,`${a} x 24 = ${a*24}.`,0,[a*12,a*60,a*7,a*24+24])},
+()=>{const a=r(2,[3,5,8,12,20][L]);return ti(`How many days are in ${a} weeks?`,a*7,`${a} x 7 = ${a*7}.`,0,[a*5,a*6,a*10,a*7+7])},
+()=>{const a=r(2,[3,5,8,12,20][L]);return ti(`How many weeks are in ${a*7} days?`,a,`${a*7} divided by 7 = ${a}.`,0,[a*7,a+1,a-1,a*2])},
+()=>{const a=r(2,[5,9,12,20,30][L]);return ti(`How many seconds are in ${a} minutes?`,a*60,`${a} x 60 = ${a*60}.`,0,[a*100,a*30,a*24,a*60+60])},
+()=>{const s=r(6,14)*60+M5(),h2=r(1,4),m=M5(),e=s+h2*60+m;return mk('Time',`A film starts at ${t24(s)} and lasts ${h2} hr ${m} min. When does it end?`,t24(e),[t24(e+10),t24(e-10),t24(e+60),t24(e-60)],`${t24(s)} + ${h2} hr = ${t24(s+h2*60)}. Then add ${m} min.`)},
+()=>{const s=r(6,14)*60+M5(),h2=r(1,4),m=r(1,11)*5,e=s+h2*60+m;return mk('Time',`A bus leaves at ${t24(s)} and arrives at ${t24(e)}. How long is the trip?`,dur(h2*60+m),[dur(h2*60+m+10),dur(h2*60+m-10),dur((h2+1)*60+m),dur((h2-1)*60+m)],`Count the hours and then the minutes from ${t24(s)} to ${t24(e)}.`)},
+()=>{const H2=r(1,11),m=M5();return mk('Time',`Write ${H2}:${pad(m)} PM in 24-hour time.`,t24((H2+12)*60+m),[t24(H2*60+m),t24((H2+11)*60+m),t24((H2+13)*60+m),t24((H2+10)*60+m)],'Add 12 to the hour for PM times.')},
+()=>{const a=r(2,[5,9,12,20,30][L]);return ti(`How many months are in ${a} years?`,a*12,`${a} x 12 = ${a*12}.`,0,[a*10,a*7,a*52,a*12+12])},
+()=>{const a=r(2,[5,9,12,20,30][L]);return ti(`How many years are in ${a} decades?`,a*10,`1 decade = 10 years, so ${a} x 10 = ${a*10}.`,0,[a*100,a*12,a+10,a*5])},
+()=>{const y=r(1980,2015),a=r(5,15);return ti(`A child is born in ${y}. In which year will the child be ${a} years old?`,y+a,`${y} + ${a} = ${y+a}.`,0,[y+a+1,y+a-1,y+a+10,y-a])},
+()=>{const k=r(2,[4,6,9,12,20][L]),d=r(1,6);return ti(`How many days are in ${k} weeks and ${d} days?`,7*k+d,`${k} x 7 = ${7*k}, then + ${d} = ${7*k+d}.`,0,[7*k,7*k+d+1,7*k+d-1,k*d+7])},
+()=>{const i=r(0,6),n=r(2,[9,15,30,50,100][L]),w=DYS[(i+n)%7];return mk('Time',`Today is ${DYS[i]}. What day will it be after ${n} days?`,w,shuf(DYS.filter(x=>x!=w)).slice(0,3),`Divide ${n} by 7 and count on the remainder (${n%7}) from ${DYS[i]}.`)},
+()=>{const i=r(0,11),n=r(2,11),w=MON[(i+n)%12];return mk('Time',`Which month comes ${n} months after ${MON[i]}?`,w,shuf(MON.filter(x=>x!=w)).slice(0,3),`Count ${n} months forward from ${MON[i]}.`)},
+()=>{const H2=r(1,11),m=r(1,11)*5;return ti(`The time is ${H2}:${pad(m)}. How many minutes are there until ${H2+1}:00?`,60-m,`60 - ${m} = ${60-m} minutes.`,0,[m,60-m+5,60-m-5,30-m<0?m+5:30-m])},
+()=>{const a=r(2,[9,12,24,48,72][L]);return ti(`How many half-hours are in ${a} hours?`,a*2,`There are 2 half-hours in 1 hour, so ${a} x 2 = ${a*2}.`,0,[a*4,a*3,a+2,a])},
+()=>{const a=r(2,[9,12,24,48,72][L]);return ti(`How many quarter-hours are in ${a} hours?`,a*4,`There are 4 quarter-hours in 1 hour, so ${a} x 4 = ${a*4}.`,0,[a*2,a*3,a+4,a*6])},
+()=>{const s=r(8,14)*60+M5(),m=r(2,12)*5,e=s+m;return mk('Time',`A lesson starts at ${t24(s)} and lasts ${m} minutes. When does it end?`,t24(e),[t24(e+10),t24(e-10),t24(e+5),t24(e-5)],`Add ${m} minutes to ${t24(s)}.`)}],
+'Information Processing':[
+()=>{const[v1,c]=bar(),i=r(0,3),j=(i+1+r(0,2))%4,s=v1[i]+v1[j];return ip(`How many books did Team ${TL[i]} and Team ${TL[j]} read together?`,s,`${v1[i]} + ${v1[j]} = ${s}.`,c,[s+1,s-1,s+10,s-10])},
+()=>{const[v1,c]=bar(),i=v1.indexOf(Math.max(...v1));return mk('Information Processing','The bar graph shows books read by four teams. Which team read the most?','Team '+TL[i],TL.filter((_,j)=>j!=i).map(x=>'Team '+x),`The tallest bar is Team ${TL[i]}.`,c)},
+()=>{const[v1,c]=bar(),i=v1.indexOf(Math.min(...v1));return mk('Information Processing','The bar graph shows books read by four teams. Which team read the fewest?','Team '+TL[i],TL.filter((_,j)=>j!=i).map(x=>'Team '+x),`The shortest bar is Team ${TL[i]}.`,c)},
+()=>{const[v1,c]=bar(),i=r(0,3);return ip(`The bar graph shows books read. How many books did Team ${TL[i]} read?`,v1[i],`Read the number on the bar of Team ${TL[i]}.`,c,[v1[i]+1,v1[i]-1,v1[i]+10,v1[(i+1)%4]])},
+()=>{const[v1,c]=bar();let i=0,j=1;if(v1[i]<v1[j])[i,j]=[j,i];const d=v1[i]-v1[j];return ip(`How many more books did Team ${TL[i]} read than Team ${TL[j]}?`,d,`${v1[i]} - ${v1[j]} = ${d}.`,c,[d+1,d-1,d+2,v1[i]+v1[j]])},
+()=>{const[v1,c]=bar(),s=v1.reduce((a,b)=>a+b);return ip('How many books did all four teams read altogether?',s,`Add all four bars: ${v1.join(' + ')} = ${s}.`,c,[s+1,s-1,s+10,s-10])},
+()=>{const[v1,c]=bar(),s=v1[0]+v1[1];return ip('How many books did Team A and Team B read together?',s,`${v1[0]} + ${v1[1]} = ${s}.`,c,[s+1,s-1,s+10,s-10])},
+()=>{const[v1,c]=bar();let i=2,j=3;if(v1[i]>v1[j])[i,j]=[j,i];const d=v1[j]-v1[i];return ip(`How many fewer books did Team ${TL[i]} read than Team ${TL[j]}?`,d,`${v1[j]} - ${v1[i]} = ${d}.`,c,[d+1,d-1,d+2,v1[i]+v1[j]])},
+()=>{const n=r(3,[12,20,30,40,50][L]);return ip('How many does this tally chart show?',n,'Each group of 5 shows 5. Count the groups, then the extra lines.',{t:'tally',n},[n+1,n-1,n+5,n-5])},
+()=>{const k=pick([2,5,10]),n=r(2,8);return ip(`In a pictograph, one circle stands for ${k} books. There are ${n} circles. How many books is that?`,n*k,`${n} x ${k} = ${n*k}.`,{t:'pict',n},[n*k+k,n*k-k,n+k,n*k+1])},
+()=>{const k=pick([2,5,10]),n=r(2,8);return ip(`In a pictograph, one circle stands for ${k} books. A class read ${n*k} books. How many circles are needed?`,n,`${n*k} divided by ${k} = ${n}.`,0,[n+1,n-1,n*k,n+2])},
+()=>{const m=r(5,[15,30,60,90,150][L]),d=r(1,4);return ip(`What is the mean (average) of ${m-d}, ${m} and ${m+d}?`,m,`Add them: ${3*m}. Divide by 3 to get ${m}.`,0,[m+d,m-d,m+1,m-1])},
+()=>{const t=shuf([...Array(30).keys()].map(x=>(x+1)*[1,1,2,3,5][L])).slice(0,5),R=Math.max(...t)-Math.min(...t);return ip(`What is the range of these numbers?  ${t.join(', ')}`,R,`Range = largest - smallest = ${Math.max(...t)} - ${Math.min(...t)} = ${R}.`,0,[R+1,R-1,Math.max(...t),Math.min(...t),R+2])},
+()=>{const t=shuf([...Array(30).keys()].map(x=>x+1)).slice(0,6),m=t.pop(),l=shuf([m,m,m,...t.slice(0,4)]);return ip(`Which number appears most often (the mode)?  ${l.join(', ')}`,m,`${m} appears 3 times, more than any other number.`,0,t.slice(0,3))},
+()=>{const t=shuf([...Array(40).keys()].map(x=>x+1)).slice(0,5),s=[...t].sort((a,b)=>a-b);return ip(`What is the median (middle number) of  ${t.join(', ')}?`,s[2],`Put the numbers in order: ${s.join(', ')}. The middle one is ${s[2]}.`,0,[s[1],s[3],s[0],s[4]])},
+()=>{const s=r(2,[4,5,6,7,8][L]),t=r(2,[3,4,5,6,7][L]);return ip(`A team has ${s} shirts and ${t} shorts. How many different outfits can be made?`,s*t,`${s} x ${t} = ${s*t}.`,0,[s+t,s*t+1,s*t-1,s*t*2])},
+()=>{const a=r(10,[20,30,50,70,90][L]),b=r(10,[20,30,50,70,90][L]),x=r(2,Math.min(a,b)-3),T=a+b-x;return ip(`In a class of ${T}, ${a} like cricket and ${b} like football. Everyone likes at least one game. How many like both?`,x,`${a} + ${b} = ${a+b}. That is ${x} more than ${T}, so ${x} like both.`,0,[a+b,T-a,T-b,x+1,x-1])},
+()=>{const a=r(5,[20,40,80,150,300][L]),b=r(5,[20,40,80,150,300][L]),c=r(5,[20,40,80,150,300][L]);return ip(`A table shows ${a} books on Monday, ${b} on Tuesday and ${c} on Wednesday. How many books in three days?`,a+b+c,`${a} + ${b} + ${c} = ${a+b+c}.`,0,[a+b,b+c,a+c,a+b+c+10])},
+()=>{const T=r(30,60),a=r(5,15),b=r(5,15);return ip(`In a class of ${T}, ${a} walk to school and ${b} cycle. The rest come by bus. How many come by bus?`,T-a-b,`${T} - ${a} - ${b} = ${T-a-b}.`,0,[T-a,T-b,a+b,T-a-b+2])},
+()=>{const a=r(2,12),b=r(2,12),w=a>b?'Red':b>a?'Blue':'Equally likely';return mk('Information Processing',`A bag has ${a} red balls and ${b} blue balls. Which colour are you more likely to pick?`,w,['Red','Blue','Equally likely','Green'].filter(x=>x!=w),`The colour with more balls is more likely to be picked.`)}],
+Geometry:[
+()=>{const a=pick([r(1,17)*5,90,180,r(19,35)*5,r(37,70)*5]),w=a<90?AT[0]:a==90?AT[1]:a<180?AT[2]:a==180?AT[3]:AT[4];return mk('Geometry',`What type of angle is ${a} degrees?`,w,AT.filter(x=>x!=w),`Acute: less than 90. Right: 90. Obtuse: 90 to 180. Straight: 180. Reflex: more than 180.`)},
+()=>{const a=ang();return K('Geometry')(`Two angles are complementary. One is ${a} degrees. What is the other?`,90-a,`Complementary angles add up to 90: 90 - ${a} = ${90-a}.`,0,[a,180-a,90+a,100-a])},
+()=>{const a=r(1,17)*10;return K('Geometry')(`Two angles are supplementary. One is ${a} degrees. What is the other?`,180-a,`Supplementary angles add up to 180: 180 - ${a} = ${180-a}.`,0,[a,90-a<0?a+10:90-a,180+a,190-a])},
+()=>{const a=r(2,12)*5,b=r(2,12)*5;return K('Geometry')(`A triangle has angles of ${a} degrees and ${b} degrees. What is the third angle?`,180-a-b,`Angles of a triangle add up to 180: 180 - ${a} - ${b} = ${180-a-b}.`,0,[360-a-b,90-a-b<0?a+b:90-a-b,180-a,180-b])},
+()=>{const a=r(6,20)*5,b=r(6,20)*5,c=r(6,20)*5;return K('Geometry')(`Three angles of a quadrilateral are ${a}, ${b} and ${c} degrees. Find the fourth angle.`,360-a-b-c,`Angles of a quadrilateral add up to 360: 360 - ${a+b+c} = ${360-a-b-c}.`,0,[180-a-b-c<0?a+b+c-180:180-a-b-c,360-a-b,a+b+c,360-a-b-c+10])},
+()=>{const a=r(6,30)*5,b=r(6,30)*5;return K('Geometry')(`Angles around a point are ${a}, ${b} and one more. The three angles fill a full turn. Find the missing angle.`,360-a-b,`A full turn is 360 degrees: 360 - ${a} - ${b} = ${360-a-b}.`,0,[180-a-b<0?a+b:180-a-b,360-a,360-b,a+b])},
+()=>{const a=r(2,14)*5,b=r(2,14)*5;return K('Geometry')(`Three angles lie on a straight line. Two are ${a} and ${b} degrees. Find the third angle.`,180-a-b,`A straight line is 180 degrees: 180 - ${a} - ${b} = ${180-a-b}.`,0,[360-a-b,90-a-b<0?a+b:90-a-b,180-a,a+b])},
+()=>{const x=r(2,16)*5,e=x*2<180?x*2:60;return K('Geometry')(`An isosceles triangle has a top angle of ${e} degrees. What is each base angle?`,(180-e)/2,`(180 - ${e}) divided by 2 = ${(180-e)/2}.`,0,[180-e,90-e<=0?e:90-e,e,(180-e)/2+5])},
+()=>{const h=r(1,5),a=h*30;return K('Geometry')(`What is the angle between the clock hands at ${h} o'clock?`,a,`Each hour is 30 degrees: ${h} x 30 = ${a}.`,0,[a+30,a-30<=0?a+60:a-30,a*2,a+60,360-a].filter(x=>x!=360-a||false))},
+()=>{const n=r(1,4);return K('Geometry')(`A wheel makes ${n} quarter turn${n>1?'s':''}. How many degrees has it turned?`,90*n,`1 quarter turn = 90 degrees, so ${n} x 90 = ${90*n}.`,0,[45*n,180*n,90*n+90,100*n])},
+()=>{const S=[['pentagon',5],['hexagon',6],['heptagon',7],['octagon',8],['triangle',3],['quadrilateral',4]],[nm2,s]=pick(S);return K('Geometry')(`How many sides does a ${nm2} have?`,s,`A ${nm2} has ${s} sides.`,0,[s+1,s-1,s+2,s-2])},
+()=>{const[nm2,fa,ve,ed]=pick(SO),k=pick([['faces',fa],['vertices',ve],['edges',ed]]);return K('Geometry')(`How many ${k[0]} does a ${nm2} have?`,k[1],`A ${nm2} has ${fa} faces, ${ve} vertices and ${ed} edges.`,0,[fa,ve,ed,k[1]+1,k[1]-1].filter(x=>x!=k[1]))},
+()=>{const S=[['square',4],['rectangle',2],['equilateral triangle',3],['regular pentagon',5],['regular hexagon',6],['isosceles triangle',1]],[nm2,s]=pick(S);return K('Geometry')(`How many lines of symmetry does a ${nm2} have?`,s,`A ${nm2} has ${s} line${s>1?'s':''} of symmetry.`,0,[s+1,s-1<0?s+2:s-1,s+2,0].filter(x=>x!=s))},
+()=>{const S=[['square',4],['rectangle',4],['right-angled triangle',1],['equilateral triangle',0]],[nm2,s]=pick(S);return K('Geometry')(`How many right angles does a ${nm2} have?`,s,`A ${nm2} has ${s} right angle${s==1?'':'s'}.`,0,[s+1,s+2,s+3,2].filter(x=>x!=s))},
+()=>{const S=[['line segment',2],['ray',1],['line',0]],[nm2,s]=pick(S);return K('Geometry')(`How many end points does a ${nm2} have?`,s,`A line segment has 2 end points, a ray has 1 and a line has none.`,0,[0,1,2,3].filter(x=>x!=s))},
+()=>{const a=r(1,4)*90,b=r(1,4)*90;return K('Geometry')(`A hand turns ${a} degrees and then ${b} degrees more. How many degrees has it turned in all?`,a+b,`${a} + ${b} = ${a+b}.`,0,[a+b+90,a+b-90<=0?a+b+180:a+b-90,a*b%360+90,180+a])},
+()=>{const S=[['a triangle',180],['a quadrilateral',360],['a straight line',180],['a full turn',360]],[nm2,s]=pick(S);return mk('Geometry',`The angles of ${nm2} add up to how many degrees?`,s+' degrees',['90 degrees','180 degrees','270 degrees','360 degrees'].filter(x=>x!=s+' degrees'),`The angles of ${nm2} add up to ${s} degrees.`)},
+()=>{const a=r(10,17)*10;return K('Geometry')(`An angle is ${a} degrees. What is its reflex angle?`,360-a,`Reflex angle = 360 - ${a} = ${360-a}.`,0,[180-a<=0?a+10:180-a,a+180,a,360-a+10])},
+()=>{const a=r(2,17)*10,b=a==90?100:a;return K('Geometry')(`Two straight lines cross. One angle is ${b} degrees. What is the angle opposite to it?`,b,`Vertically opposite angles are equal.`,0,[180-b,360-b,90,b+10])},
+()=>{const a=shuf([r(1,17)*10,r(1,17)*10+5,r(19,35)*5,r(37,70)*5]),m=Math.max(...a);return K('Geometry')(`Which angle is the largest?`,m,`Compare the four angles: the greatest value is ${m} degrees.`,0,a.filter(x=>x!=m).slice(0,3))}]
+}};
+// attach: every level gets all 20 builders for each of the 6 topics
+// ---------- GRADE SYSTEM: difficulty tag per question + grade-specific topics ----------
+const TIER={Numbers:[0,0,1,1,1,0,0,0,0,1,0,0,1,2,2,1,2,1,0,1],Patterns:[0,1,1,2,3,1,2,3,4,0,1,1,3,1,2,3,3,2,3,2],Measurements:[1,0,1,1,1,2,2,2,2,0,1,2,2,0,1,1,2,3,2,3],Time:[1,0,1,1,0,1,1,2,3,2,1,1,2,2,3,2,1,2,2,2],'Information Processing':[1,0,0,0,1,2,1,2,0,0,1,3,3,3,4,2,4,1,2,1],Geometry:[2,2,2,3,4,3,3,4,2,1,0,1,1,0,0,2,3,4,3,0]};
+// size of the numbers used for each grade at each of the 5 levels (0 = smallest numbers, 4 = biggest)
+const GL={2:[0,0,0,1,1],3:[0,1,1,1,2],4:[1,1,2,2,3],5:[0,1,2,3,4],6:[2,2,3,3,4],7:[2,3,3,4,4],8:[3,3,4,4,4]};
+const XG=()=>{const nu=K('Numbers'),pa=K('Patterns'),me=K('Measurements'),ti=K('Time'),ip=K('Information Processing'),ge=K('Geometry'),Q=(c,q,a,w,e)=>mk(c,q,String(a),w.map(String),e),
+CP=[[2,3],[3,4],[2,5],[3,5],[4,5],[5,6],[3,7],[2,7]],PT=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10],[9,12,15],[12,16,20],[9,40,41]];
+// each entry: [lowest grade, difficulty 0-4, builder]
+return[
+[4,1,()=>{const b=r(4,12),x=r(1,b-3),y=r(1,b-x-1);return Q('Numbers',`Calculate ${x}/${b} + ${y}/${b}.`,`${x+y}/${b}`,[`${x+y}/${b*2}`,`${x*y}/${b}`,`${x+y+1}/${b}`,`${x}/${b+y}`],'The bottom numbers (denominators) are the same, so add only the top numbers.')}],
+[5,1,()=>{const a=r(11,99)/10,b=r(11,99)/10,s=a+b;return Q('Numbers',`Calculate ${a} + ${b}.`,s.toFixed(1),[(s+1).toFixed(1),(s-1).toFixed(1),(s+.1).toFixed(1),(s-.1).toFixed(1)],'Line up the decimal points and add.')}],
+[6,1,()=>{const p=pick([10,20,25,50,75]),n=pick([40,80,120,200,400]),a=p*n/100;return nu(`What is ${p}% of ${n}?`,a,`${p}% of ${n} = ${p}/100 x ${n} = ${a}.`,0,[a+10,a-10,n-a,p+n/10])}],
+[6,2,()=>{const a=r(2,15),c=a+r(2,15),b=r(2,15);return Math.random()<.5?nu(`Calculate -${a} + ${c}.`,c-a,`Start at -${a} and move ${c} steps up the number line: ${c-a}.`,0,[c+a,a,c,c-a+2]):nu(`Calculate ${a} - (-${b}).`,a+b,`Subtracting a negative is the same as adding: ${a} + ${b} = ${a+b}.`,0,[a-b<0?b-a:a-b,a*b,a+b+2,b])}],
+[6,2,()=>{const k=r(2,12),[p,q]=pick(CP),a=k*p,b=k*q;return nu(`What is the HCF (highest common factor) of ${a} and ${b}?`,k,`${a} = ${k} x ${p} and ${b} = ${k} x ${q}. The biggest number that divides both is ${k}.`,0,[k*2,k+1,k+2,a+b])}],
+[7,2,()=>{const b=r(2,9),e=r(2,4);return nu(`What is ${b}^${e}?`,b**e,`${b}^${e} = ${Array(e).fill(b).join(' x ')} = ${b**e}.`,0,[b*e,b**(e+1),b**(e-1),b**e+b])}],
+[7,3,()=>{const a=r(1,5),b=r(1,5),k=r(2,12),n=(a+b)*k;return nu(`Share Rs ${n} in the ratio ${a}:${b}. How many rupees is the first share?`,a*k,`Total parts = ${a+b}, so 1 part = ${k}. First share = ${a} x ${k} = ${a*k}.`,0,[b*k,k,a*k+k,(a+b)*a])}],
+[8,3,()=>{const s=r(3,25);return nu(`What is the square root of ${s*s}?`,s,`${s} x ${s} = ${s*s}.`,0,[s*2,s*s,s+1,s-1])}],
+[8,4,()=>{const p=pick([200,400,500,800,1000]),q=pick([5,10,20,25]),a=p*(100+q)/100;return nu(`A price of Rs ${p} goes up by ${q}%. What is the new price in rupees?`,a,`${q}% of ${p} = ${p*q/100}. New price = ${p} + ${p*q/100} = ${a}.`,0,[p*q/100,a+q,p-p*q/100,a+10])}],
+[6,1,()=>{const x=r(2,30),a=r(2,20);return pa(`If x + ${a} = ${x+a}, find x.`,x,`Subtract ${a} from both sides: ${x+a} - ${a} = ${x}.`,0,[x+a,x+1,x-1,a])}],
+[6,2,()=>{const a=r(2,9),x=r(2,12);return pa(`If ${a}x = ${a*x}, find x.`,x,`Divide both sides by ${a}: ${a*x} / ${a} = ${x}.`,0,[a*x,x+1,x-1,a])}],
+[7,3,()=>{const a=r(2,5),x=r(2,12),c=r(1,20);return pa(`If ${a}x + ${c} = ${a*x+c}, find x.`,x,`Subtract ${c}: ${a}x = ${a*x}. Divide by ${a}: x = ${x}.`,0,[x+1,x-1,a*x,x+c])}],
+[7,3,()=>{const a=r(2,6),c=r(1,9),n=r(5,12);return pa(`The nth term of a sequence is ${a}n + ${c}. What is the ${n}th term?`,a*n+c,`Put n = ${n}: ${a} x ${n} + ${c} = ${a*n+c}.`,0,[a*n,a*(n+c),n+a+c,a*n+c+a])}],
+[8,4,()=>{const d=r(2,6),s=d+r(1,9),t=[0,1,2,3].map(i=>s+i*d).join(', ');return Q('Patterns',`Which is the nth term rule of this sequence?  ${t}, ...`,`${d}n + ${s-d}`,[`${d}n + ${s}`,`${s}n + ${d}`,`${d}n - ${s-d}`,`${d+1}n + ${s-d}`],`The gap is ${d}, so the rule starts with ${d}n. The first term is ${s}, so add ${s-d}.`)}],
+[8,4,()=>{const x=r(2,9),q=r(1,20);return pa(`Find the value of x^2 + ${q} when x = ${x}.`,x*x+q,`${x}^2 = ${x*x}, then + ${q} = ${x*x+q}.`,0,[2*x+q,x*x,x*x+q+1,x+q])}],
+[4,1,()=>{const l=r(2,15),w=r(2,15);return me(`What is the area of a rectangle ${l} cm long and ${w} cm wide (in square cm)?`,l*w,`Area = length x width = ${l} x ${w} = ${l*w}.`,0,[2*(l+w),l+w,l*w+l,l*w-w])}],
+[5,2,()=>{const b=2*r(2,10),h=r(2,12);return me(`What is the area of a triangle with base ${b} cm and height ${h} cm (in square cm)?`,b*h/2,`Area = 1/2 x base x height = ${b*h/2}.`,0,[b*h,b+h,b*h/2+b/2,b*h/2+h])}],
+[6,2,()=>{const l=r(2,9),w=r(2,9),h=r(2,9);return me(`What is the volume of a cuboid ${l} cm by ${w} cm by ${h} cm (in cubic cm)?`,l*w*h,`Volume = ${l} x ${w} x ${h} = ${l*w*h}.`,0,[l*w+h,l+w+h,2*(l*w+w*h+l*h),l*w*h+l])}],
+[6,3,()=>{const k=r(1,5);return me(`A circle has radius ${7*k} cm. Using pi = 22/7, what is its circumference in cm?`,44*k,`Circumference = 2 x 22/7 x ${7*k} = ${44*k}.`,0,[22*k,88*k,154*k,44*k+7])}],
+[7,4,()=>{const k=r(1,4);return me(`A circle has radius ${7*k} cm. Using pi = 22/7, what is its area in square cm?`,154*k*k,`Area = 22/7 x ${7*k} x ${7*k} = ${154*k*k}.`,0,[44*k,308*k*k,154*k,22*k*k])}],
+[7,2,()=>{const x=r(1,9)+pick([.5,.25,.75]);return me(`Convert ${x} km into metres.`,x*1000,`${x} x 1,000 = ${f(x*1000)} m.`,0,[x*100,x*10000,x*1000+500,x*1000-250])}],
+[8,4,()=>{const a=r(2,12);return me(`What is the total surface area of a cube with side ${a} cm (in square cm)?`,6*a*a,`A cube has 6 square faces: 6 x ${a} x ${a} = ${6*a*a}.`,0,[a**3,4*a*a,a*a,12*a])}],
+[7,1,()=>{const v=r(2,12)*10,t=r(2,6);return ti(`A car travels ${v*t} km in ${t} hours. What is its speed in km/h?`,v,`Speed = distance / time = ${v*t} / ${t} = ${v}.`,0,[v*t,v+t,v/2,v+10])}],
+[7,2,()=>{const v=r(2,12)*10,t=r(2,6);return ti(`A bus travels at ${v} km/h for ${t} hours. How far does it go in km?`,v*t,`Distance = speed x time = ${v} x ${t} = ${v*t}.`,0,[v+t,v*t+v,v*t-v,v*t+10])}],
+[7,2,()=>{const v=r(2,12)*10,t=r(2,8);return ti(`A truck travels ${v*t} km at ${v} km/h. How many hours does it take?`,t,`Time = distance / speed = ${v*t} / ${v} = ${t}.`,0,[v,t+1,t+2,t*2])}],
+[6,3,()=>{const a=r(2,9),h=r(2,12);return ti(`A clock gains ${a} minutes every hour. After ${h} hours, how many minutes ahead is it?`,a*h,`${a} x ${h} = ${a*h}.`,0,[a+h,a*h+a,a*h-a,a*h+10])}],
+[7,4,()=>{const v=pick([60,80,120]),m=pick([15,30,45]),d=v*m/60;return ti(`A train goes ${d} km in ${m} minutes. What is its speed in km/h?`,v,`${m} minutes is ${m/60} of an hour. ${d} / ${m/60} = ${v} km/h.`,0,[d,v*2,v/2,v+20])}],
+[6,1,()=>{const m=r(5,60),d=r(1,5),l=shuf([m-d,m+d,m-2*d,m+2*d]);return ip(`What is the mean of ${l.join(', ')}?`,m,`The sum is ${4*m}. Divide by 4 to get ${m}.`,0,[m+1,m-1,m+d,m+2*d])}],
+[6,2,()=>{const a=r(1,9),b=r(1,9);return Q('Information Processing',`A bag has ${a} red and ${b} blue balls. What is the probability of picking a red ball?`,`${a}/${a+b}`,[`${b}/${a+b}`,`${a}/${b}`,`${a+b}/${a}`,`1/${a+b}`],`Probability = favourable / total = ${a}/${a+b}.`)}],
+[7,3,()=>{const m=r(5,40),o=[0,1,2,3].map(()=>r(m-4,m+4)),s=o.reduce((a,b)=>a+b);return ip(`The mean of 5 numbers is ${m}. Four of them are ${o.join(', ')}. What is the fifth number?`,5*m-s,`Total = 5 x ${m} = ${5*m}. Fifth = ${5*m} - ${s} = ${5*m-s}.`,0,[5*m-s+1,5*m-s-1,m,s])}],
+[7,4,()=>{const n=pick([12,18,20,24,30,36,40,45,60,72]),x=r(2,Math.max(3,n/3|0)),a=x*360/n;return ip(`In a class of ${n}, ${x} students like cricket. What angle shows cricket in a pie chart?`,a,`${x}/${n} of 360 degrees = ${a} degrees.`,0,[a+10,a-10,a*2,x*100/n|0])}],
+[8,4,()=>{const b=r(5,30),c=b+2*r(1,5),a=b-r(1,4),d=c+r(1,4),m=(b+c)/2;return ip(`What is the median of ${shuf([a,b,c,d]).join(', ')}?`,m,`In order: ${a}, ${b}, ${c}, ${d}. Median = (${b} + ${c}) / 2 = ${m}.`,0,[b,c,m+1,m-1])}],
+[6,2,()=>{const n=r(5,10);return ge(`What is the sum of the angles of a polygon with ${n} sides?`,(n-2)*180,`Angle sum = (${n} - 2) x 180 = ${(n-2)*180}.`,0,[n*180,(n-1)*180,(n-3)*180,(n-2)*90])}],
+[6,3,()=>{const n=pick([5,6,8,9,10,12]),a=(n-2)*180/n;return ge(`What is each angle of a regular polygon with ${n} sides (in degrees)?`,a,`Angle sum = ${(n-2)*180}. Divide by ${n}: ${a}.`,0,[360/n,a+10,a-10,(n-2)*90])}],
+[7,4,()=>{const[a,b,c]=pick(PT);return Math.random()<.5?ge(`A right triangle has shorter sides ${a} cm and ${b} cm. How long is the hypotenuse in cm?`,c,`${a}^2 + ${b}^2 = ${a*a+b*b} = ${c}^2.`,0,[a+b,c+1,c-1,a*b]):ge(`A right triangle has hypotenuse ${c} cm and one side ${a} cm. How long is the other side in cm?`,b,`${c}^2 - ${a}^2 = ${c*c-a*a} = ${b}^2.`,0,[c-a,b+1,b-1,c+a])}],
+[7,2,()=>{const x=r(3,17)*10;return x==90?ge('Two parallel lines are cut by a line. A corresponding angle is 40 degrees. What is the other corresponding angle?',40,'Corresponding angles are equal.',0,[140,50,90,320]):Math.random()<.5?ge(`Two parallel lines are cut by a transversal. One angle is ${x} degrees. What is its corresponding angle?`,x,'Corresponding angles are equal.',0,[180-x,360-x,90,x+10]):ge(`Two parallel lines are cut by a transversal. One angle is ${x} degrees. What is its co-interior angle?`,180-x,'Co-interior angles add up to 180 degrees.',0,[x,360-x,90,180+x])}],
+[8,3,()=>{const a=r(3,10)*5,b=r(3,10)*5;return ge(`In a triangle, two interior angles are ${a} and ${b} degrees. What is the exterior angle at the third corner?`,a+b,`Exterior angle = sum of the two opposite interior angles = ${a+b}.`,0,[180-a-b,a,b,a+b+10])}],
+[6,1,()=>{const T=[['The distance from the centre of a circle to its edge','radius'],['A line through the centre joining two points on a circle','diameter'],['The distance around a circle','circumference'],['A line joining two points on a circle, not through the centre','chord']],[q,a]=pick(T);return Q('Geometry',q+' is called the:',a,T.map(x=>x[1]).filter(x=>x!=a),`That is the ${a}.`)}],
+// ---- Grade 8 algebra ----
+[8,0,()=>{const a=r(2,9),b=r(2,9);return Q('Patterns',`Simplify: ${a}x + ${b}x`,`${a+b}x`,[`${a*b}x`,`${a+b}x^2`,`${a+b}`,`${a*b}x^2`],`Add the numbers in front of x: ${a} + ${b} = ${a+b}.`)}],
+[8,0,()=>{const a=r(5,12),b=r(2,a-1);return Q('Patterns',`Simplify: ${a}y - ${b}y`,`${a-b}y`,[`${a+b}y`,`${a*b}y`,`${a-b}`,`${a-b}y^2`],`${a} - ${b} = ${a-b}, so the answer is ${a-b}y.`)}],
+[8,1,()=>{const x=r(2,30),a=r(2,20);return pa(`Solve: x - ${a} = ${x-a<1?x:x-a}`,x-a<1?x+a:x,`Add ${a} to both sides.`,0,[a,x-a<1?x:x-a,x+1,x-1])}],
+[8,1,()=>{const a=r(2,9),x=r(2,12);return pa(`Solve: x / ${a} = ${x}`,a*x,`Multiply both sides by ${a}: ${x} x ${a} = ${a*x}.`,0,[x,a+x,a*x+a,x+1])}],
+[8,2,()=>{const n=r(2,15),m=r(2,5),c=r(1,12);return pa(`I think of a number, multiply it by ${m} and add ${c}. The answer is ${m*n+c}. What was my number?`,n,`Work backwards: ${m*n+c} - ${c} = ${m*n}, then divide by ${m} = ${n}.`,0,[m*n,n+1,n-1<1?n+2:n-1,m*n+c-m])}],
+[8,2,()=>{const a=r(2,6),b=r(2,9);return Q('Patterns',`Expand: ${a}(x + ${b})`,`${a}x + ${a*b}`,[`${a}x + ${b}`,`${a+1}x + ${a*b}`,`x + ${a*b}`,`${a}x + ${a+b}`],`Multiply both terms by ${a}: ${a}x + ${a*b}.`)}],
+[8,2,()=>{const a=r(2,6),x=r(2,9),y=r(2,9);return pa(`Find the value of ${a}x + y when x = ${x} and y = ${y}.`,a*x+y,`${a} x ${x} + ${y} = ${a*x+y}.`,0,[a*(x+y),a+x+y,a*x*y,a*x+y+a])}],
+[8,3,()=>{const a=r(3,8),c=r(1,9),x=r(2,12),b=r(1,9);return pa(`Solve: ${a}x - ${c} = ${a*x-c}`,x,`Add ${c}: ${a}x = ${a*x}. Divide by ${a}: x = ${x}.`,0,[x+1,x-1<1?x+2:x-1,a*x,x+c])}],
+[8,3,()=>{const x=r(2,10),a=r(2,4),b=a+r(1,4),c=r(1,12);return pa(`Solve: ${b}x + ${c} = ${a}x + ${c+(b-a)*x}`,x,`Subtract ${a}x and ${c} from both sides: ${b-a}x = ${(b-a)*x}, so x = ${x}.`,0,[x+1,x<3?x+2:x-1,x*2,c])}],
+[8,3,()=>{const a=r(2,5),b=r(2,5),c=r(1,9);return Q('Patterns',`Simplify: ${a}(x + ${b}) + ${c}x`,`${a+c}x + ${a*b}`,[`${a+c}x + ${b}`,`${a*c}x + ${a*b}`,`${a}x + ${a*b+c}`,`${a+c}x + ${a+b}`],`Expand: ${a}x + ${a*b}. Then add ${c}x to get ${a+c}x + ${a*b}.`)}],
+[8,3,()=>{const x=r(2,9),y=r(1,x-1),a=r(2,5);return pa(`Find ${a}x^2 - y when x = ${x} and y = ${y}.`,a*x*x-y,`${a} x ${x*x} - ${y} = ${a*x*x-y}.`,0,[a*x*x+y,(a*x)**2-y,a*x-y,a*x*x-y+a])}],
+[8,4,()=>{const a=r(1,6),b=r(1,6);return Q('Patterns',`Expand: (x + ${a})(x + ${b})`,`x^2 + ${a+b}x + ${a*b}`,[`x^2 + ${a*b}x + ${a+b}`,`x^2 + ${a+b}x + ${a+b}`,`x^2 + ${a*b}`,`x^2 + ${a+b}x - ${a*b}`],`Multiply each term: x^2 + ${b}x + ${a}x + ${a*b} = x^2 + ${a+b}x + ${a*b}.`)}],
+[8,4,()=>{const a=r(2,9),k=r(2,6);return Q('Patterns',`Factorise: ${a*k}x + ${a*(k+1)}`,`${a}(${k}x + ${k+1})`,[`${a}(${k}x + ${k})`,`${k}(${a}x + ${k+1})`,`x(${a*k} + ${a*(k+1)})`,`${a*k}(x + ${k+1})`],`Take out the common factor ${a}: ${a}(${k}x + ${k+1}).`)}],
+[8,4,()=>{const X=r(2,9),k=r(2,5),c=r(1,10);return pa(`Solve: ${k}(x - ${c}) = ${k*X}`,X+c,`Divide by ${k}: x - ${c} = ${X}. Add ${c}: x = ${X+c}.`,0,[X,X+c+1,k*X,X+c-1])}]
+]};
+let PC={};
+function pool(l){const g=S.grade,k=g+'-'+l;if(PC[k])return PC[k];const E=GL[g][l],X=XB(E),o=[],tm=Math.min(4,g==2?Math.ceil(l/2):g==3?Math.round(l*.75):g==8?l+1:l);
+Object.keys(X).forEach(c=>X[c].forEach((b,i)=>{const t=TIER[c][i];if(t<=tm&&t>=tm-2)o.push(b)}));
+XG().forEach(([mg,t,b])=>{if(g>=mg&&t<=l+1&&t>=l-2)o.push(b)});
+const oa=g==5?l:g==4?Math.max(0,l-1):g==6?Math.min(4,l+1):-1;if(oa>=0)o.push(...A[oa]);return PC[k]=o}
+function setGrade(g){S.grade=g;PC={};try{localStorage.setItem('mc_grade',g)}catch(e){}setup()}
+
+
+// ---------- charts (drawn with SVG) ----------
+function chart(c){
+if(c.t=='bar'){const m=Math.max(...c.v);return `<svg viewBox="0 0 400 150">${c.v.map((v,i)=>{const h=v/m*92,x=18+i*95;return `<rect x="${x}" y="${118-h}" width="70" height="${h}" rx="6" fill="#f6c343"/><text x="${x+35}" y="${111-h}" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">${v}</text><text x="${x+35}" y="140" text-anchor="middle" fill="#cbd5e1" font-size="15">${c.l[i]}</text>`}).join('')}</svg>`}
+if(c.t=='tally'){const g=Math.floor(c.n/5),rm=c.n%5,w=(g+(rm?1:0))*62+10;let s='';for(let i=0;i<g;i++){const x=10+i*62;s+=[0,1,2,3].map(k=>`<line x1="${x+6+k*11}" y1="6" x2="${x+6+k*11}" y2="54" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`).join('')+`<line x1="${x}" y1="48" x2="${x+50}" y2="12" stroke="#f6c343" stroke-width="5" stroke-linecap="round"/>`}for(let k=0;k<rm;k++){const x=10+g*62+6+k*11;s+=`<line x1="${x}" y1="6" x2="${x}" y2="54" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`}return `<svg viewBox="0 0 ${w} 60">${s}</svg>`}
+if(c.t=='pict')return `<svg viewBox="0 0 ${c.n*40+10} 40">${Array.from({length:c.n},(_,i)=>`<circle cx="${25+i*40}" cy="20" r="15" fill="#f6c343" stroke="#fff" stroke-width="2"/>`).join('')}</svg>`;return''}
+// ---------- audio (all sounds are made live in the browser, no files needed) ----------
+let ac,mg,fg,song=1,step=0,nextT=0,tmr,fxOn=true,lvl=0;const MV=.4;
+function AU(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();const cp=ac.createDynamicsCompressor();cp.connect(ac.destination);mg=ac.createGain();mg.gain.value=MV;mg.connect(cp);fg=ac.createGain();fg.gain.value=.9;fg.connect(cp)}if(ac.state=='suspended')ac.resume();return ac}
+const duck=(v,s)=>{if(mg)mg.gain.setTargetAtTime(v,ac.currentTime,s||.08)};
+function osc(t,fr,d,ty,v,dest,f2){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.setValueAtTime(fr,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(dest);o.start(t);o.stop(t+d+.02)}
+function noise(t,d,v,fr,dest,at){const n=ac.sampleRate*d,b=ac.createBuffer(1,n,ac.sampleRate),x=b.getChannelData(0);for(let i=0;i<n;i++)x[i]=Math.random()*2-1;const s=ac.createBufferSource(),fl=ac.createBiquadFilter(),g=ac.createGain();s.buffer=b;fl.type='bandpass';fl.frequency.value=fr;g.gain.setValueAtTime(.001,t);g.gain.linearRampToValueAtTime(v,t+(at||.01));g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(fl).connect(g).connect(dest);s.start(t)}
+// slow tremolo strings (the held, shivering chords of a quiz-show suspense bed)
+function strings(t,n,d,v){const g=ac.createGain(),lp=ac.createBiquadFilter(),l=ac.createOscillator(),lg=ac.createGain();lp.type='lowpass';lp.frequency.value=1400;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+d*.35);g.gain.linearRampToValueAtTime(v*.6,t+d*.9);g.gain.linearRampToValueAtTime(.0001,t+d);l.frequency.value=6.5;lg.gain.value=v*.35;l.connect(lg).connect(g.gain);l.start(t);l.stop(t+d+.05);n.forEach(m=>[-7,7].forEach(c=>{const o=ac.createOscillator();o.type='sawtooth';o.frequency.value=mf(m);o.detune.value=c;o.connect(lp);o.start(t);o.stop(t+d+.05)}));lp.connect(g).connect(mg)}
+function brass(t,n,d,v){const g=ac.createGain(),lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(400,t);lp.frequency.linearRampToValueAtTime(2200,t+.15);g.gain.setValueAtTime(.001,t);g.gain.linearRampToValueAtTime(v,t+.04);g.gain.exponentialRampToValueAtTime(.001,t+d);n.forEach(m=>{const o=ac.createOscillator();o.type='sawtooth';o.frequency.value=mf(m);o.connect(lp);o.start(t);o.stop(t+d+.05)});lp.connect(g).connect(mg)}
+function fx(n){if(!fxOn)return;try{AU();const t=ac.currentTime;
+if(n=='click')osc(t,700,.08,'square',.15,fg);
+if(n=='lock'){osc(t,110,1,'sine',.8,fg,40);osc(t,220,.6,'sawtooth',.12,fg,110);noise(t,1,.25,500,fg,.6)}
+if(n=='tick')osc(t,900,.06,'square',.12,fg);
+if(n=='ok'){[60,64,67,72].forEach((m,i)=>osc(t+i*.09,mf(m),.55,'sawtooth',.1,fg));osc(t+.4,mf(76),1,'triangle',.25,fg);noise(t+.2,1.8,.35,900,fg,.3)}
+if(n=='bad'){osc(t,300,1.1,'sawtooth',.25,fg,60);osc(t+.05,150,1.1,'square',.12,fg,40)}
+if(n=='life'){osc(t,500,.15,'triangle',.25,fg);osc(t+.12,750,.2,'triangle',.25,fg)}
+if(n=='badge')[659,784,988,1319].forEach((x,i)=>osc(t+i*.09,x,.3,'triangle',.22,fg));
+if(n=='fan'){noise(t,3,.7,900,fg,.5);[523,659,784,1047,784,1047,1319].forEach((x,i)=>osc(t+i*.14,x,.35,'sawtooth',.18,fg))}
+if(n=='start'){osc(t,100,.8,'sine',.8,fg,40);[48,55,60,64,67,72].forEach((m,i)=>osc(t+.15+i*.11,mf(m),.5,'sawtooth',.1,fg))}
+if(n=='whistle'){const o=ac.createOscillator(),l=ac.createOscillator(),lg=ac.createGain(),g=ac.createGain();o.frequency.value=2800;l.frequency.value=40;lg.gain.value=120;l.connect(lg).connect(o.frequency);g.gain.setValueAtTime(.3,t);g.gain.setValueAtTime(.3,t+.5);g.gain.exponentialRampToValueAtTime(.001,t+.6);o.connect(g).connect(fg);o.start(t);l.start(t);o.stop(t+.65);l.stop(t+.65)}
+}catch(e){}}
+// Two original tracks in the style of a TV quiz show. Each loops 4 bars; the beat speeds up and adds layers as the level rises.
+const SONGS=[{n:'Hot Seat',bpm:100,tense:1,roots:[40,36,38,35],ch:[[64,67,71],[60,64,67],[62,66,69],[59,63,66]],ping:[83,84,81,80]},
+{n:'Studio Groove',bpm:116,roots:[36,41,43,36],ch:[[60,64,67],[60,65,69],[59,62,67],[60,64,67]]}];
+const mf=m=>440*2**((m-69)/12);
+function tick(){const s=SONGS[song-1];if(!ac||!s)return;const d=60/(s.bpm+lvl*(s.tense?5:2))/2;
+if(nextT<ac.currentTime)nextT=ac.currentTime+.05;
+while(nextT<ac.currentTime+.3){const t=nextT,i=step%8,bar=Math.floor(step/8)%4,root=s.roots[bar],ch=s.ch[bar];
+if(s.tense){
+osc(t,mf(i%2?root+12:root),d*.95,'triangle',i%2?.2:.42,mg);
+if(i%2==0)osc(t,mf(root),d*.9,'sawtooth',.07,mg);
+if(i==0)osc(t,120,.35,'sine',.9,mg,45);
+if(i==4||(lvl>=2&&i==6)||(lvl>=3&&i==2))osc(t,110,.25,'sine',.5,mg,45);
+osc(t,i%2?1900:2500,.025,'square',.025+lvl*.005,mg);
+if(i==0)strings(t,ch,d*8,.045);
+if(i==6){osc(t,mf(s.ping[bar]),d*3,'sine',.1,mg);osc(t+d*1.5,mf(s.ping[bar]),d*3,'sine',.04,mg)}
+if(bar==3&&i==0)brass(t,ch.map(x=>x+12),d*3,.05);
+if(lvl>=3&&bar==3&&i>=4)noise(t,.09,.22,1800,mg)}
+else{
+osc(t,mf(root+[0,12,0,12,7,12,0,12][i]),d*.9,'triangle',.4,mg);
+if(i==0||i==4)osc(t,150,.2,'sine',.9,mg,45);
+if(i==2||i==6)noise(t,.12,.4,1800,mg);
+if(i%2)noise(t,.04,.1,7000,mg);
+if(i%2==0)osc(t,mf(ch[[0,1,2,1][i/2]]+12),d*1.2,'square',.05,mg);
+if(i==0||i==3)brass(t,ch,d*1.6,.05)}
+nextT+=d;step++}}
+function music(){clearInterval(tmr);if(song&&ac){nextT=ac.currentTime+.05;step=0;tmr=setInterval(tick,100)}}
+function songBtn(){AU();song=(song+1)%(SONGS.length+1);music();$('#bs').textContent='Music: '+(song?SONGS[song-1].n:'Off')}
+function fxBtn(b){fxOn=!fxOn;b.textContent='Effects: '+(fxOn?'On':'Off')}
+// ---------- game data ----------
+const LV=[{n:'Rookie',p:10,t:25},{n:'Striker',p:20,t:30},{n:'Captain',p:30,t:35},{n:'Legend',p:40,t:40},{n:'Champion',p:50,t:45}];
+const lvOf=i=>Math.floor(i/3);
+// Level rewards: one is unlocked after every level except the last. With the timer off, the two time rewards become points rewards.
+const REW=[
+{t:'Bonus Time',d:'+10 seconds on every question from now on.',alt:{t:'Bonus Points',d:'+25 points added to your score right now.'}},
+{t:'Double Points',d:'Every question in the next level is worth 2x points.'},
+{t:'Lifelines Refilled',d:'All the lifelines you used come back, ready to use again.'},
+{t:'Unlimited Time',d:'No timer in the final level. Think as long as you need.',alt:{t:'Double Points',d:'Every question in the final level is worth 2x points.'}}];
+const rew=l=>{const x=REW[l];return !S.timerOn&&x.alt?x.alt:x};
+const DBL=()=>S.timerOn?[2]:[2,4],BON=()=>S.timerOn?0:25;
+const mult=l=>DBL().includes(l)?2:1,ptsOf=i=>LV[lvOf(i)].p*mult(lvOf(i));
+const cum=i=>{let c=i>=3?BON():0;for(let j=0;j<=i;j++)c+=ptsOf(j);return c},maxPts=()=>cum(14);
+function grant(l){const P=S.P;if(l==0){if(S.timerOn)P.time+=10;else P.score+=25}if(l==2)P.life={};if(l==3&&S.timerOn)P.inf=4}
+const LIFE={
+fifty:['50:50','Two wrong options disappear. You choose between the correct answer and one wrong answer.','<span>50:50</span>'],
+ask:['Ask a Friend','You get 30 seconds to talk with a friend or classmate. You still make the final choice.','<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 4-8 8-8s8 3 8 8"/></svg>'],
+flip:['Flip the Question','Swap this question for a new one at the same level. You lose no points.','<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.5-5.8M20 12a8 8 0 0 1-13.5 5.8M18 2.5v4.2h-4.2M6 21.5v-4.2h4.2"/></svg>']};
+let S={grade:+(()=>{try{return localStorage.getItem('mc_grade')}catch(e){return 0}})()||5,name:'',timerOn:true,seen:new Set(),last:'',P:null},iv;
+// a question counts as "seen" by its text AND its chart, so graph questions with new data are not blocked
+const qkey=q=>q.q+(q.ch?JSON.stringify(q.ch):'');
+function draw(l){let q,t=0;do{q=pick(pool(l))();t++}while(t<60&&(S.seen.has(qkey(q))||q.cat==S.last));if(S.seen.size>800)S.seen.clear();S.seen.add(qkey(q));S.last=q.cat;return q}
+// ---------- class list from Firebase (read-only; same project and codes as the Penalty Cup game) ----------
+const FB={project:'maths-penalty-cup',key:'AIzaSyAMsz-GB8WmGNUYjod6fquQJMYBQPJeOGs'};
+const fbUrl=c=>`https://firestore.googleapis.com/v1/projects/${FB.project}/databases/(default)/documents/classes/${c}?key=${FB.key}`,fmtC=c=>c.slice(0,4)+'-'+c.slice(4);
+let CC={code:'',lib:null,cls:'',msg:'',done:new Set(),skip:new Set(),pool:[],mode:'manual'};try{CC.mode=localStorage.getItem('mc_mode')==='auto'?'auto':'manual'}catch(e){}
+const setMode=m=>{CC.mode=m;try{localStorage.setItem('mc_mode',m)}catch(e){}setup()};
+try{CC.code=localStorage.getItem('pk_code')||''}catch(e){}
+async function loadCode(c){c=(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length!=8){CC.msg='A class code has 8 letters and numbers.';return setup()}
+CC.msg='Loading...';setup();
+try{const r=await fetch(fbUrl(c));if(!r.ok){CC.msg=r.status==404?'Code not found. Check it and try again.':'Could not load (error '+r.status+').';return setup()}
+const j=await r.json();CC.lib=JSON.parse(j.fields.lib.stringValue);CC.code=c;try{localStorage.setItem('pk_code',c)}catch(e){}
+const ks=Object.keys(CC.lib);CC.cls=ks.length==1?ks[0]:(CC.lib[CC.cls]?CC.cls:'');CC.msg=ks.length?'':'That code has no classes yet.'}
+catch(e){CC.msg='Could not reach the cloud. You can still type a name.'}setup()}
+const studentsOf=k=>{const c=CC.lib&&CC.lib[k],out=[],seen=new Set();if(c)c.g.slice(0,c.n).forEach(g=>String(g.txt||'').split('\n').map(x=>x.trim()).filter(Boolean).forEach(n=>{if(!seen.has(n)){seen.add(n);out.push({n,team:g.name})}}));return out};
+function pickCls(i){CC.cls=Object.keys(CC.lib)[i];setup()}
+function ccHTML(){let h='<div class="cc"><div class="lbl">Class</div>';
+if(!CC.lib){h+=`<div class="row"><input id="cd" aria-label="Class code" placeholder="Class code" value="${esc(CC.code?fmtC(CC.code):'')}" onkeydown="if(event.key==='Enter')loadCode(this.value)"><button class="opt" onclick="loadCode($('#cd').value)">Load class</button></div>`}
+else{const ks=Object.keys(CC.lib);h+=`<div class="row">${ks.map((k,i)=>`<button class="opt ${k==CC.cls?'on':''}" onclick="pickCls(${i})">${esc(k)}</button>`).join('')}<button class="opt" onclick="CC.lib=null;CC.cls='';setup()">Change code</button></div>`;
+h+=CC.cls?`<div class="sub">${studentsOf(CC.cls).length} students in ${esc(CC.cls)}. Each student gets one turn, picked at random.</div>`:'<div class="sub">Tap a class to choose it.</div>'}
+if(CC.msg)h+=`<div class="${CC.msg=='Loading...'?'ok':'err'}" style="min-height:0">${esc(CC.msg)}</div>`;
+return h+'</div>'}
+// ---------- auto mode: call students from the class list at random ----------
+function startAuto(){if(!CC.lib||!CC.cls){$('#err').textContent='Load your class code and tap a class first.';return}
+CC.pool=studentsOf(CC.cls);if(!CC.pool.length){$('#err').textContent='This class has no student names.';return}
+CC.done.clear();CC.skip.clear();S.name='';AU();callNext()}
+function skipP(){CC.skip.add(S.name);callNext()}
+function callNext(){closeM();const rem=CC.pool.filter(p=>!CC.done.has(p.n)&&!CC.skip.has(p.n));
+if(!rem.length){modal(`<div class="title" style="font-size:4.4vh">Everyone has played!</div><div class="q2">${CC.done.size} students took a turn${CC.skip.size?', '+CC.skip.size+' skipped (absent)':''}.</div><div class="row"><button class="big" onclick="CC.done.clear();CC.skip.clear();callNext()">Start over</button><button class="no2" onclick="setup()">Back to setup</button></div>`);return}
+const p=pick(rem);S.name=p.n;fx('click');
+modal(`<div class="q2">Next player</div><div class="title" style="font-size:6vh">${esc(p.n)}</div><div class="rk">${esc(p.team)}</div><div class="q2" style="font-size:2.4vh">${rem.length-1} more after this one</div><div class="row"><button class="big" onclick="closeM();begin()">Start</button><button class="no2" onclick="skipP()">Skip (absent)</button><button class="no2" onclick="setup()">Back to setup</button></div>`)}
+// ---------- score history (saved in this browser: player, points, day) ----------
+const HK='mc_hist',hLoad=()=>{try{return JSON.parse(localStorage.getItem(HK))||[]}catch(e){return[]}},hSave=a=>{try{localStorage.setItem(HK,JSON.stringify(a.slice(-3000)))}catch(e){}};
+const dKey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+function logRun(P){if(P.logged||!P.name)return;P.logged=1;const a=hLoad(),n=new Date();a.push({d:dKey(n),t:pad(n.getHours())+':'+pad(n.getMinutes()),n:P.name,s:P.score,c:P.correct,m:maxPts(),g:S.grade});hSave(a)}
+let HV='day';
+function histView(v){if(v)HV=v;const a=hLoad().reverse();let body;
+if(!a.length)body='<div class="q2">No games saved yet. Finish a game and it will appear here.</div>';
+else if(HV=='day'){const g={};a.forEach(x=>(g[x.d]=g[x.d]||[]).push(x));body=Object.keys(g).sort().reverse().map(d=>`<div class="lbl" style="margin-top:1vh">${d}</div>`+g[d].map(x=>`<div class="q2" style="font-size:2.2vh;text-align:left">${x.t} - <b>${esc(x.n)}</b> (Grade ${x.g||'?'}): ${x.s} / ${x.m} points, ${x.c}/15 correct</div>`).join('')).join('')}
+else{const g={};a.forEach(x=>{const k=x.n.trim().toLowerCase(),o=g[k]=g[k]||{n:x.n,p:0,b:0,t:0,l:''};o.p++;o.t+=x.s;o.b=Math.max(o.b,x.s);if(x.d>o.l)o.l=x.d});
+body=Object.values(g).sort((p,q)=>q.b-p.b).map(o=>`<div class="q2" style="font-size:2.2vh;text-align:left"><b>${esc(o.n)}</b>: best ${o.b}, total ${o.t}, ${o.p} game${o.p>1?'s':''}, last played ${o.l}</div>`).join('')}
+modal(`<div class="title" style="font-size:4vh">Score History</div><div class="row"><button class="opt ${HV=='day'?'on':''}" onclick="histView('day')">By day</button><button class="opt ${HV=='player'?'on':''}" onclick="histView('player')">By player</button></div><div style="max-height:46vh;overflow:auto;width:100%">${body}</div><div class="q2" style="font-size:1.8vh">Saved on this device and browser only.</div><div class="row"><button class="big" onclick="closeM()">Close</button>${a.length?`<button class="no2" onclick="histCsv()">Download CSV</button><button class="no2" onclick="histClear()">Clear history</button>`:''}</div>`)}
+function histCsv(){const q=s=>'"'+String(s).replace(/"/g,'""')+'"',rows=['Date,Time,Player,Grade,Points,Max points,Correct'].concat(hLoad().map(x=>[x.d,x.t,q(x.n),x.g||'',x.s,x.m,x.c].join(','))),u=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'})),l=document.createElement('a');l.href=u;l.download='math-champion-history.csv';l.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function histClear(){modal(`<div class="ans">Clear all saved scores?</div><div class="q2">This cannot be undone.</div><div class="row"><button class="no2" onclick="histView()">Keep them</button><button class="ok2" onclick="hSave([]);histView()">Yes, clear</button></div>`)}
+// ---------- setup and rules ----------
+function setup(){clearInterval(iv);clearTimeout(S.lt);clearInterval(S.ai);S.P=null;S.paused=false;document.querySelectorAll('.ov').forEach(x=>x.remove());
+app.innerHTML=`<div class="setup"><div class="plate setcard"><div class="pin"><div class="title">Who Wants to Be a Math Champion?</div>
+<div class="sub">One player. 15 questions. 5 levels. Unlock a new reward after every level.</div>
+<div class="lbl">Mode</div><div class="row"><button class="opt ${CC.mode=='manual'?'on':''}" onclick="setMode('manual')">Manual - type a name</button><button class="opt ${CC.mode=='auto'?'on':''}" onclick="setMode('auto')">Auto - call students from class list</button></div>
+${CC.mode=='auto'?ccHTML():`<label class="lbl" for="nm">Player name</label><input id="nm" maxlength="16" placeholder="Type your name" value="${esc(S.name)}" oninput="S.name=this.value" onkeydown="if(event.key=='Enter')toRules()">`}
+<div class="lbl">Grade</div><div class="row">${[2,3,4,5,6,7,8].map(g=>`<button class="opt ${S.grade==g?'on':''}" onclick="setGrade(${g})">Grade ${g}</button>`).join('')}</div><div class="lbl">Question timer</div><div class="row"><button class="opt ${S.timerOn?'on':''}" onclick="S.timerOn=true;setup()">On</button><button class="opt ${S.timerOn?'':'on'}" onclick="S.timerOn=false;setup()">Off (no time pressure)</button></div>
+<button class="opt" onclick="histView()">Score History</button><div class="err" id="err"></div><button class="big" onclick="${CC.mode=='auto'?'startAuto()':'toRules()'}">${CC.mode=='auto'?'Start auto mode':'Read the rules'}</button></div></div></div>`}
+function toRules(){const n=(S.name||'').trim();if(!n){$('#err').textContent='Please type your name.';return}S.name=n;AU();rules()}
+function rules(){const g=!!S.P;if(g&&!S.locked)S.paused=true;const T=S.timerOn;
+modal(`<div class="title" style="font-size:4vh">Rule Book</div><div class="rg">
+<div><h3>1. How to play</h3>You sit in the hot seat for 15 questions across 5 levels. Tap an answer, then press Lock answer. Explain your thinking, then see if you are right. One wrong answer (or running out of time) ends your game, but you keep the points you have already earned.</div>
+<div><h3>2. Questions get harder</h3>Level 1 (Rookie) has easy questions with small numbers. Every level after that is harder than the one before. Level 5 (Champion) has the toughest multi-step word problems.</div>
+<div><h3>3. Levels and points</h3>${LV.map((l,i)=>`<b>Level ${i+1} - ${l.n}</b> (Q${i*3+1}-${i*3+3}): ${l.p} points each${mult(i)>1?' (x2 = '+l.p*2+' with Double Points)':''}<br>`).join('')}Maximum: ${maxPts()} points.</div>
+<div><h3>4. Badges</h3>A badge is unlocked each time you correctly answer question 3, 6, 9, 12 and 15 (the end of every level). Get all 5 badges and win all 15 questions to become the Math Champion.</div>
+<div style="grid-column:1/-1"><h3>5. Level rewards (unlocked after every level)</h3>${[0,1,2,3].map(i=>`<b>After Level ${i+1} (${LV[i].n}) - ${rew(i).t}:</b> ${rew(i).d}<br>`).join('')}${T?'Bonus time is added on top of the normal time for each level. ':'The timer is off in this game, so the time rewards are replaced by points rewards. '}Rewards are shown as gold tags above the question. Double Points levels are also marked x2 on the points ladder. You only unlock a reward by answering the last question of a level correctly.</div>
+<div><h3>6. Timer</h3>${T?`Time per question: ${LV.map(l=>l.n+' '+l.t+'s').join(', ')}. Bonus time from Level 1 is added after you finish it. If time runs out, the answer counts as wrong. In the final level the timer is removed completely.`:'The timer is off. Take as much thinking time as you need.'} The timer can be switched on or off on the start screen.</div>
+<div><h3>7. Lifelines (once each per game)</h3>${Object.values(LIFE).map(c=>`<b>${c[0]}:</b> ${c[1]}<br>`).join('')}Tap a lifeline to read what it does before using it. Use a lifeline before locking an answer. The reward after Level 3 gives all used lifelines back once.</div>
+<div style="grid-column:1/-1"><h3>8. Fair play</h3>Take thinking time. Explain your reasoning. Use rough paper. Speed is not the only goal: good thinking, effort and learning from mistakes matter most.</div></div>
+<button class="big" style="font-size:3vh;padding:1.2vh 4vh" onclick="${g?'back()':'begin()'}">${g?'Back to game':'Start the game'}</button>`)}
+function back(){S.paused=false;closeM()}
+function begin(){closeM();AU();CC.done.add(S.name);S.P={name:S.name,score:0,badges:[],correct:0,life:{},time:0,inf:-1};S.qi=0;S.last='';S.out=false;music();fx('start');newQ(0)}
+function newQ(l){S.q=draw(l);S.sel=-1;S.locked=false;S.paused=false;S.inf=S.P.inf===l;S.left=LV[l].t+S.P.time;lvl=l;render();startTimer()}
+function startTimer(){clearInterval(iv);if(!S.timerOn||S.inf)return;iv=setInterval(()=>{if(S.paused||S.locked)return;S.left--;const e=$('#tm');if(e){e.textContent=S.left;e.parentNode.classList.toggle('low',S.left<=5)}if(S.left<=5&&S.left>0)fx('tick');if(S.left<=0){clearInterval(iv);reveal(true)}},1000)}
+// ---------- question screen ----------
+function lifeHTML(){const P=S.P;return Object.keys(LIFE).map(k=>`<button class="lf ${P.life[k]?'x':''}" ${P.life[k]||S.locked?'disabled':''} onclick="lifeInfo('${k}')" title="${LIFE[k][0]}" aria-label="${LIFE[k][0]}">${LIFE[k][2]}</button>`).join('')}
+function ladHTML(){return [14,13,12,11,10,9,8,7,6,5,4,3,2,1,0].map(i=>`<div class="rung ${(i+1)%3==0?'ms':''} ${i==S.qi?'on':i<S.qi?'dn':''}"><i>${i+1}</i><span>${LV[lvOf(i)].n}${mult(lvOf(i))>1?' x2':''}</span><b>${cum(i)}</b></div>`).join('')}
+function render(){const P=S.P,q=S.q,l=lvOf(S.qi);
+app.innerHTML=`<div class="top"><div class="who"><small>Player</small><b>${esc(P.name)}</b></div><div class="who"><small>Points</small><b id="pts">${P.score}</b></div><div class="who"><small>Question</small><b>${S.qi+1} / 15</b></div>${S.timerOn?`<div class="tmr"><b id="tm" class="${S.inf?'inf':''}">${S.inf?'&infin;':S.left}</b></div>`:''}<div class="sp"></div><div class="lfs" id="lfs">${lifeHTML()}</div><div class="sp"></div><button class="tb" id="bs" onclick="songBtn()">Music: ${song?SONGS[song-1].n:'Off'}</button><button class="tb" onclick="fxBtn(this)">Effects: ${fxOn?'On':'Off'}</button><button class="tb" onclick="rules()">Rules</button><button class="tb" onclick="newGame()">New game</button></div>
+<div class="main"><div class="qp"><div class="meta"><span class="chip">Level ${l+1}: ${LV[l].n}</span><span class="chip">${q.cat}</span><span class="chip">${ptsOf(S.qi)} points</span>${mult(l)>1?'<span class="chip hot">2x points</span>':''}${S.timerOn&&P.time&&!S.inf?`<span class="chip hot">+${P.time} s bonus time</span>`:''}${S.inf?'<span class="chip hot">Unlimited time</span>':''}</div>${q.ch?`<div class="chart">${chart(q.ch)}</div>`:''}<div class="plate qplate"><div class="pin"><div class="qt ${q.q.length>90?'long':''}">${q.q}</div></div></div>
+<div class="opts">${q.o.map((o,i)=>`<button class="opt-b ${o.length>24?'sm':''}" id="o${i}" onclick="choose(${i})"><span class="in"><span class="ltr">${'ABCD'[i]}:</span><span>${esc(o)}</span></span></button>`).join('')}</div><div class="exp" id="exp"></div>
+<div class="act" id="act"><button class="big" id="lockb" disabled onclick="lock()">Lock answer</button></div></div>
+<div class="lad"><div class="lt">Points ladder</div>${ladHTML()}</div></div>`}
+function choose(i){if(S.locked)return;fx('click');S.sel=i;document.querySelectorAll('.opt-b').forEach((b,k)=>b.classList.toggle('sel',k==i));$('#lockb').disabled=false}
+function lock(){if(S.sel<0||S.locked)return;S.locked=true;clearInterval(iv);fx('lock');duck(.1,.05);$('#lockb').disabled=true;$('#lfs').innerHTML=lifeHTML();S.lt=setTimeout(()=>reveal(false),2000)}
+function reveal(timedOut){if(!S.P)return;S.locked=true;clearInterval(iv);const P=S.P,q=S.q,l=lvOf(S.qi),ok=!timedOut&&S.sel==q.a;
+document.querySelectorAll('.opt-b').forEach((b,k)=>{b.disabled=true;b.classList.remove('sel');if(k==q.a)b.classList.add('ok');else if(k==S.sel)b.classList.add('no');else b.classList.add('dim')});
+if(ok){P.score+=ptsOf(S.qi);P.correct++;fx('ok')}else fx('bad');setTimeout(()=>duck(MV,.4),2600);$('#pts').textContent=P.score;$('#lfs').innerHTML=lifeHTML();
+let t=ok?'Correct! +'+ptsOf(S.qi)+' points. ':(timedOut?'Time is up. ':'Not this time. ')+'The answer is '+'ABCD'[q.a]+': '+q.o[q.a]+'. ';t+=q.e;
+if(!ok)t+='  Game over.';S.out=!ok;if(ok&&(S.qi+1)%3==0){P.badges.push(LV[l].n);t+='  BADGE UNLOCKED: '+LV[l].n+' Badge!'+(S.qi<14?' A new reward awaits you!':'');setTimeout(()=>fx('badge'),900)}
+$('#exp').textContent=t;$('#act').innerHTML=`<button class="big" onclick="nextQ()">${S.out||S.qi==14?'See results':(S.qi+1)%3==0?'Claim reward':'Next question'}</button>`}
+function nextQ(){if(S.out||S.qi>=14)return endRun();if((S.qi+1)%3==0)return unlock();S.qi++;newQ(lvOf(S.qi))}
+// shown after every completed level: the badge plus the reward that was just unlocked
+function unlock(){const l=lvOf(S.qi),x=rew(l),nl=l+1;grant(l);fx('badge');cf(40);const P=S.P,nx=LV[nl];
+modal(`<div class="title" style="font-size:4.4vh">Level ${l+1} complete!</div><div class="rk">${LV[l].n} Badge earned</div>
+<div class="rwd"><small>REWARD UNLOCKED</small><b>${x.t}</b><span>${x.d}</span></div>
+<div class="q2" style="font-size:2.7vh">Next: Level ${nl+1} - ${nx.n}<br>${ptsOf(S.qi+1)} points per question${S.timerOn?' | '+(P.inf===nl?'Unlimited time':(nx.t+P.time)+' seconds each'):''}<br>Questions get harder. Good luck, ${esc(P.name)}!</div>
+<button class="big" style="font-size:3vh;padding:1.2vh 5vh" onclick="closeM();S.qi++;newQ(lvOf(S.qi))">Start Level ${nl+1}</button>`)}
+// ---------- lifelines ----------
+function lifeInfo(k){if(S.locked)return;fx('life');S.paused=true;const o=document.createElement('div');o.className='ov top2';o.id='li';
+o.innerHTML=`<div class="box"><div class="ans">${LIFE[k][0]}</div><div class="q2">${LIFE[k][1]}</div><div class="row"><button class="ok2" onclick="useLife('${k}')">Use it now</button><button class="no2" onclick="$('#li').remove();S.paused=false">Cancel</button></div></div>`;document.body.appendChild(o)}
+function useLife(k){$('#li').remove();const P=S.P,q=S.q;P.life[k]=1;S.paused=false;$('#lfs').innerHTML=lifeHTML();
+if(k=='flip'){newQ(lvOf(S.qi));return}
+if(k=='fifty'){shuf([0,1,2,3].filter(i=>i!=q.a)).slice(0,2).forEach(i=>{$('#o'+i).classList.add('off');if(S.sel==i){S.sel=-1;$('#lockb').disabled=true}})}
+if(k=='ask'){S.paused=true;let s=30;const o=document.createElement('div');o.className='ov top2';o.id='ak';o.innerHTML=`<div class="box"><div class="ans">Ask a Friend</div><div class="q2">Talk together: <b id="as">30</b> seconds</div><button class="ok2" onclick="clearInterval(S.ai);$('#ak').remove();S.paused=false">Done</button></div>`;document.body.appendChild(o);
+S.ai=setInterval(()=>{s--;const e=$('#as');if(!e){clearInterval(S.ai);return}e.textContent=s;if(s<=0){clearInterval(S.ai);fx('whistle')}},1000)}}
+// ---------- results ----------
+function endRun(){clearInterval(iv);const P=S.P,all=!S.out&&P.correct==15;logRun(P);if(all)fx('fan');
+modal(`${all?`<svg viewBox="0 0 120 120" style="height:16vh"><path d="M30 10h60v28c0 20-13 34-30 34S30 58 30 38z" fill="#ffd24a" stroke="#e5a91b" stroke-width="3"/><path d="M30 18H12c0 20 8 30 22 32M90 18h18c0 20-8 30-22 32" fill="none" stroke="#e5a91b" stroke-width="6" stroke-linecap="round"/><rect x="52" y="70" width="16" height="22" fill="#e5a91b"/><rect x="36" y="92" width="48" height="14" rx="4" fill="#ffd24a" stroke="#e5a91b" stroke-width="3"/></svg><div class="title" style="font-size:4.6vh">Math Champion</div>`:`<div class="title" style="font-size:4.6vh">Game over</div>`}
+<div class="ans">${esc(P.name)}</div><div class="q2">${P.score} / ${maxPts()} points | ${P.correct} / 15 correct</div><div class="rk">${P.badges.length?'Badges: '+P.badges.join(', '):'No badge this time'}</div>
+<div class="q2" style="font-size:2.6vh">${all?'The future belongs to curious minds!':'Every mistake is a chance to learn. Try again!'}</div>
+${CC.mode=='auto'&&CC.pool.length?`<div class="row"><button class="big" onclick="callNext()">Next player</button><button class="no2" onclick="closeM();begin()">Play again</button><button class="no2" onclick="setup()">Back to setup</button></div>`:`<div class="row"><button class="big" onclick="closeM();begin()">Play again</button><button class="no2" onclick="setup()">New game</button></div>`}`);if(all)cf(70)}
+function newGame(){fx('click');if(S.P&&!S.locked)S.paused=true;modal(`<div class="ans">Start a new game?</div><div class="q2">Your current score will be lost.</div><div class="row"><button class="ok2" onclick="setup()">Yes, new game</button><button class="no2" onclick="back()">Cancel</button></div>`)}
+function cf(n){const C=['#f6c343','#f97316','#3b82f6','#fff','#22c55e'];for(let i=0;i<n;i++){const d=document.createElement('span');d.className='cf';d.style.cssText=`left:${r(0,98)}vw;background:${pick(C)};animation-delay:${Math.random()*1.6}s`;document.body.appendChild(d);setTimeout(()=>d.remove(),5500)}}
+function modal(h){closeM();const o=document.createElement('div');o.className='ov';o.id='mod';o.innerHTML=`<div class="box">${h}</div>`;document.body.appendChild(o)}
+function closeM(){const o=$('#mod');if(o)o.remove()}
+setup();if(CC.code)loadCode(CC.code);
+</script></body></html>
