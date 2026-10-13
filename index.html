@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Who Wants to Be a Math Champion?</title>
+<style>
+:root{--gold:#f6c343;--gold2:#b8801a;--org:#f97316;--grn:#16a34a;--red:#dc2626;--txt:#f6f2e7;--footer-h:clamp(20px,3.2vh,30px);
+--rim:linear-gradient(#ffe9a8,#e0a526 45%,#8f5f0c);
+--face:linear-gradient(#2a2491,#0d0a4d);
+--hexo:polygon(4vh 0,calc(100% - 4vh) 0,100% 50%,calc(100% - 4vh) 100%,4vh 100%,0 50%);
+--hexi:polygon(3.7vh 0,calc(100% - 3.7vh) 0,100% 50%,calc(100% - 3.7vh) 100%,3.7vh 100%,0 50%)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+body{position:fixed;inset:0;width:100%;font-family:"Segoe UI","Trebuchet MS",Verdana,sans-serif;color:var(--txt);background:radial-gradient(ellipse 75% 60% at 50% 40%,#3a34b8 0,#1d1873 40%,#0b0840 75%,#04031c 100%)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 42%,#ffffff12 0 4deg,transparent 4deg 9deg);-webkit-mask-image:radial-gradient(circle at 50% 42%,#000 0,transparent 75%);mask-image:radial-gradient(circle at 50% 42%,#000 0,transparent 75%)}
+button,input{font:inherit}
+button{cursor:pointer;border:0;border-radius:1.2vh;color:#fff;background:#2a2391;padding:1vh 1.8vh;font-weight:700;font-size:2vh}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:.4vh solid #fff;outline-offset:.2vh}
+#ft{position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);display:flex;align-items:center;justify-content:center;font-size:1.7vh;color:#fffc;background:#000b;z-index:50;white-space:nowrap;overflow:hidden;padding:0 1vh}
+#app{position:relative;z-index:1;height:calc(100% - var(--footer-h));height:calc(100dvh - var(--footer-h));display:flex;flex-direction:column;gap:1vh;padding:1vh 1.2vw}
+
+/* gold-rimmed hexagon plates (the look of the answer boxes) */
+.plate{background:var(--rim);padding:.4vh;clip-path:var(--hexo)}
+.pin{clip-path:var(--hexi);background:var(--face)}
+
+/* setup */
+.setup{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.setcard{width:min(94vw,118vh)}
+.setcard .pin{display:flex;flex-direction:column;align-items:center;gap:1.6vh;padding:4.4vh 9vh}
+.title{font-size:5.2vh;font-weight:900;text-align:center;line-height:1.1;background:linear-gradient(#fff3c4,#f6c343 50%,#c98a12);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 .3vh 0 #000a)}
+.sub{font-size:2.4vh;color:#d9d4ff;text-align:center}
+.lbl{font-size:2.6vh;font-weight:800;color:var(--gold)}
+.row{display:flex;flex-wrap:wrap;gap:1.2vh;justify-content:center}
+input{background:#0b0840;color:#fff;font-size:3vh;padding:1.2vh 1.6vh;border-radius:1.2vh;border:.4vh solid var(--gold);width:min(40vh,80vw);text-align:center}
+input::placeholder{color:#8f8ac8}
+.opt{background:#2a2391;border:.3vh solid #f6c34388;font-size:2.2vh}
+.opt.on{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;border-color:#fff}
+.big{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;font-size:3.2vh;padding:1.2vh 6vh;border-radius:5vh;font-weight:800;box-shadow:0 .5vh 0 #8f5f0c}
+.big:disabled{box-shadow:none}
+.cc{width:100%;display:flex;flex-direction:column;align-items:center;gap:1vh}
+.cc .stu{font-size:2vh;padding:.7vh 1.4vh;background:#2a2391;border:.3vh solid #f6c34355}
+.cc .stu.on{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;border-color:#fff}
+.cc .stu.dn{opacity:.4;text-decoration:line-through}
+.cc .tm{font-size:2vh;font-weight:800;color:#d9d4ff;margin-top:.4vh}
+.cc .scr{max-height:23vh;overflow:auto;width:100%;display:flex;flex-direction:column;align-items:center;gap:.6vh}
+.cc input{font-size:2.4vh;width:min(26vh,50vw)}
+.cc .ok{color:#8dffb0;font-weight:800;font-size:2.1vh}
+.err{color:#ff9a9a;font-weight:800;min-height:3vh;font-size:2.3vh}
+
+/* top bar */
+.top{display:flex;flex-wrap:wrap;gap:1vh;align-items:center;background:linear-gradient(#0d0a4a,#070530);border:.3vh solid #f6c34366;border-radius:1.6vh;padding:.8vh 1.2vh}
+.who{display:flex;flex-direction:column;line-height:1.1;padding:0 1.4vh;min-width:9vh}
+.who small{font-size:1.5vh;color:#b9b4ff}
+.who b{font-size:3vh;color:var(--gold);max-width:26vh;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp{flex:1}
+.tb{background:#ffffff1f;font-size:1.7vh;padding:.8vh 1.4vh}
+.tmr{width:6.2vh;height:6.2vh;border-radius:50%;border:.4vh solid var(--gold);background:#0b0840;display:flex;align-items:center;justify-content:center}
+.tmr b{font-size:3vh;color:#fff}
+.tmr.low{border-color:#ff5252;animation:beat .5s infinite}
+.tmr.low b{color:#ff8a8a}
+.lfs{display:flex;gap:1.2vh}
+.lf{position:relative;width:9.6vh;height:5.4vh;padding:0;border-radius:50%;background:radial-gradient(ellipse at 50% 25%,#4a43c9,#150f5e);border:.35vh solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.9vh;font-weight:900}
+.lf svg{width:3.4vh;height:3.4vh;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lf:hover:not(:disabled){background:radial-gradient(ellipse at 50% 25%,#6a63e8,#2a2391)}
+.lf:disabled{opacity:.5}
+.lf.x:disabled{opacity:.7}
+.lf.x::before,.lf.x::after{content:"";position:absolute;left:50%;top:50%;width:78%;height:.5vh;background:var(--red);border-radius:1vh}
+.lf.x::before{transform:translate(-50%,-50%) rotate(28deg)}
+.lf.x::after{transform:translate(-50%,-50%) rotate(-28deg)}
+
+/* question area */
+.main{flex:1;min-height:0;display:grid;grid-template-columns:1fr 21vw;gap:1.2vh}
+.qp{display:flex;flex-direction:column;gap:1.2vh;min-height:0;padding:.4vh 0}
+.meta{display:flex;flex-wrap:wrap;gap:1vh;justify-content:center}
+.chip{font-size:1.9vh;font-weight:700;color:#d9d4ff;background:#0b0840cc;border:.25vh solid #f6c34355;border-radius:3vh;padding:.3vh 1.6vh}
+.chip.hot{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;border-color:#fff}
+.tmr b.inf{font-size:4.2vh}
+.rwd{background:linear-gradient(#ffe08a,#e0a526);color:#2a1800;border-radius:2.4vh;padding:1.6vh 4vh;display:flex;flex-direction:column;gap:.4vh;align-items:center;max-width:92%}
+.rwd small{font-size:1.8vh;font-weight:800;letter-spacing:.3vh}
+.rwd b{font-size:4.4vh;font-weight:900;line-height:1.1}
+.rwd span{font-size:2.5vh;font-weight:700}
+.chart{height:18vh;display:flex;justify-content:center}
+.chart svg{height:100%;max-width:100%}
+.qplate .pin{display:flex;align-items:center;justify-content:center;min-height:13vh;padding:1.6vh 6.5vh}
+.qt{font-size:3.7vh;font-weight:700;line-height:1.25;text-align:center}
+.qt.long{font-size:3.1vh}
+.opts{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.4vh 2.4vh}
+.opt-b{display:flex;min-height:0;padding:.4vh;border-radius:0;background:var(--rim);clip-path:var(--hexo);color:var(--txt);text-align:left;font-size:3.2vh;font-weight:700}
+.opt-b .in{flex:1;display:flex;align-items:center;gap:1.4vh;padding:0 5vh;clip-path:var(--hexi);background:var(--face);overflow-wrap:anywhere;line-height:1.15}
+.opt-b.sm{font-size:2.6vh}
+.ltr{color:var(--org);font-weight:900}
+.opt-b:hover:not(:disabled) .in{background:linear-gradient(#3a34b8,#1a1570)}
+.opt-b:focus-visible{outline:none}
+.opt-b:focus-visible .in{box-shadow:inset 0 0 0 .5vh #fff}
+.opt-b.sel .in{background:linear-gradient(#ffb347,#f97316);color:#1a0b00}
+.opt-b.sel .ltr{color:#1a0b00}
+.opt-b.ok .in{background:linear-gradient(#3fdc78,#128a3c);color:#04200e}
+.opt-b.ok .ltr{color:#04200e}
+.opt-b.ok{animation:blink .5s 4}
+.opt-b.no .in{background:linear-gradient(#ef4444,#991b1b)}
+.opt-b.no .ltr{color:#fff}
+.opt-b:disabled{opacity:1;cursor:default}
+.opt-b.dim{opacity:.5}
+.opt-b.off{visibility:hidden}
+.exp{min-height:5.5vh;font-size:2.3vh;font-weight:600;text-align:center;color:#e6e2ff}
+.act{display:flex;justify-content:center;gap:1.4vh}
+.act .big{font-size:3vh;padding:1vh 6vh}
+
+/* points ladder */
+.lad{display:flex;flex-direction:column;gap:.5vh;background:linear-gradient(#0d0a4a,#070530);border:.3vh solid #f6c34366;border-radius:1.6vh;padding:1vh;min-height:0}
+.lt{font-size:2vh;font-weight:800;color:var(--gold);text-align:center}
+.rung{flex:1;min-height:0;display:flex;align-items:center;gap:1vh;padding:0 1.4vh;border-radius:3vh;font-size:2.1vh;font-weight:700;color:#f4a53a}
+.rung i{font-style:normal;width:3vh;text-align:right}
+.rung span{flex:1;font-size:1.7vh;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rung.ms{color:#fff;font-weight:800}
+.rung.dn{opacity:.5}
+.rung.on{background:linear-gradient(#ffb347,#f97316);color:#1a0b00;opacity:1}
+
+/* overlays */
+.ov{position:fixed;inset:0 0 var(--footer-h) 0;background:#000c;display:flex;align-items:center;justify-content:center;padding:1.5vh;z-index:10}
+.ov.top2{z-index:30;background:#000a}
+.box{background:linear-gradient(#1a1580,#0a0740);border:.5vh solid var(--gold);border-radius:3vh;padding:2.2vh;width:min(96vw,1150px);max-height:calc(100dvh - var(--footer-h) - 2vh);overflow-y:auto;scrollbar-width:none;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.4vh}
+.q2{font-size:3.4vh;font-weight:700}
+.ans{font-size:5vh;color:var(--gold);font-weight:900}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:1.2vh;text-align:left;width:100%}
+.rg>div{background:#0006;border-radius:1.6vh;padding:1.2vh 1.4vh;font-size:1.85vh;line-height:1.35}
+.rg h3{margin:0 0 .5vh;color:var(--gold);font-size:2.5vh}
+.ok2{background:#16a34a;font-size:3.2vh}.no2{background:#334155;font-size:3.2vh}
+.rk{font-size:3vh;font-weight:800}
+.cf{position:fixed;top:-6vh;width:1.6vh;height:2.6vh;animation:fall 3.2s linear forwards;z-index:40;pointer-events:none}
+@keyframes fall{to{transform:translateY(112vh) rotate(540deg)}}
+@keyframes blink{50%{filter:brightness(1.5)}}
+@keyframes beat{50%{transform:scale(1.12)}}
+@media (max-aspect-ratio:1/1){
+.main{grid-template-columns:1fr}.lad{display:none}
+.opts{grid-template-columns:1fr;grid-template-rows:repeat(4,1fr)}
+.rg{grid-template-columns:1fr}
+.setcard .pin{padding:4.4vh 6vh}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body><div id="app"></div>
+<div id="ft">&copy; 2026 Who Wants to Be a Math Champion | Developed by AMSanjeev (Teach For India Fellow 2026&ndash;28)</div>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+const r=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[r(0,a.length-1)],f=n=>n.toLocaleString('en-US');
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad=n=>String(n).padStart(2,'0'),M5=()=>r(0,11)*5;
+const cmf=x=>[Math.floor(x/100)?Math.floor(x/100)+' m':'',x%100?x%100+' cm':''].filter(Boolean).join(' ')||'0 cm';
+const t24=m=>pad(Math.floor(m/60)%24)+':'+pad(m%60),dur=d=>Math.floor(d/60)+' hr '+d%60+' min';
+// ---------- question builders ----------
+// mk builds one question: the correct answer plus 3 different wrong answers (never negative, never a copy of the answer)
+function mk(cat,q,a,wr,e,ch){a=String(a);wr=[...new Set(wr.map(String))].filter(x=>x!==a&&!x.startsWith('-'));while(wr.length<3){const c=String(r(2,99)*7);if(c!==a&&!wr.includes(c))wr.push(c)}const o=shuf([a,...wr.slice(0,3)]);return{cat,q,o,a:o.indexOf(a),e,ch}}
+const GS=[
+[['Which angle measures exactly 90 degrees?','Right angle',['Acute angle','Obtuse angle','Straight angle'],'A right angle is exactly 90 degrees, like the corner of a book.'],
+['Which angle is smaller than 90 degrees?','Acute angle',['Right angle','Obtuse angle','Straight angle'],'An acute angle is smaller than 90 degrees.'],
+['How many right angles does a square have?','4',['2','3','6'],'Every corner of a square is a right angle, so it has 4.'],
+['Which solid has 6 square faces?','Cube',['Cone','Cylinder','Sphere'],'A cube has 6 equal square faces.']],
+[['Which angle is greater than 90 degrees but less than 180 degrees?','Obtuse angle',['Acute angle','Right angle','Straight angle'],'An obtuse angle is between 90 and 180 degrees.'],
+['A straight angle measures how many degrees?','180 degrees',['90 degrees','360 degrees','45 degrees'],'A straight line makes a 180 degree angle.'],
+['How many faces does a cuboid have?','6',['4','8','12'],'A cuboid has 6 rectangular faces.'],
+['How many corners (vertices) does a cube have?','8',['4','6','12'],'A cube has 8 corners.']],
+[['Which of these is an acute angle?','65 degrees',['90 degrees','120 degrees','180 degrees'],'Acute angles are smaller than 90 degrees.'],
+['How many edges does a cube have?','12',['6','8','10'],'A cube has 12 edges.'],
+['A full turn is how many degrees?','360 degrees',['180 degrees','90 degrees','270 degrees'],'One complete turn is 360 degrees.'],
+['Which of these is an obtuse angle?','135 degrees',['45 degrees','90 degrees','180 degrees'],'Obtuse angles are between 90 and 180 degrees.']],
+[['Looking straight down at the top of a cube, which shape do you see?','Square',['Triangle','Circle','Pentagon'],'The top face of a cube is a square.'],
+['Which solid has one curved surface and one flat circular face?','Cone',['Cylinder','Sphere','Cube'],'A cone has a curved surface and one circular base.'],
+['How many flat faces does a cylinder have?','2',['1','3','0'],'A cylinder has a flat circle at the top and bottom.'],
+['A cube is viewed from the front, the side and the top. How do the views compare?','All three views are squares',['All three views are circles','All three views are triangles','Each view is a different shape'],'Every face of a cube is a square.']],
+[['What is the greatest number of faces of a cube you can see at once?','3',['6','4','2'],'From one corner you can see 3 faces at most.'],
+['A half turn plus a quarter turn makes how many degrees?','270 degrees',['180 degrees','90 degrees','360 degrees'],'180 + 90 = 270 degrees.'],
+['Which of these is a reflex angle?','250 degrees',['90 degrees','150 degrees','180 degrees'],'A reflex angle is more than 180 degrees.'],
+['A cuboid is 4 cm long, 3 cm wide and 2 cm high. How many of its faces are squares?','0',['2','4','6'],'All sides are different, so every face is a rectangle, not a square.']]];
+const G=l=>()=>{const x=pick(GS[l]);return mk('Geometry',x[0],x[1],x[2],x[3])};
+const N=['ones','tens','hundreds','thousands','ten thousands'];
+const OLD=[
+[G(0),
+// place value: the chosen digit appears only ONCE in the number, so the question has exactly one answer
+()=>{let n,p,d;do{n=r(10000,99999);p=r(0,4);d=+String(n)[4-p]}while(d==0||String(n).split(String(d)).length!=2);
+const v=d*10**p,all=[0,1,2,3,4].filter(k=>k!=p).map(k=>d*10**k),w=p>0?[d,...shuf(all.filter(x=>x!=d)).slice(0,2)]:shuf(all).slice(0,3);
+return mk('Numbers',`What is the place value of ${d} in ${f(n)}?`,f(v),w.map(f),`The digit ${d} is in the ${N[p]} place, so its place value is ${f(v)}.`)},
+// expanded form: at least 3 non-zero digits so there are always 3 sensible wrong answers
+()=>{let n,P;do{n=r(10000,99999);P=[];String(n).split('').forEach((c,i)=>{if(c!='0')P.push(+c*10**(4-i))})}while(P.length<3);
+const J=a=>a.map(f).join(' + '),V=[];P.forEach((x,i)=>{const up=[...P];up[i]=x*10;V.push(J(up));if(x>=10){const dn=[...P];dn[i]=x/10;V.push(J(dn))}});
+return mk('Numbers',`Which is the expanded form of ${f(n)}?`,J(P),shuf(V).slice(0,3),'Split the number by place value: '+J(P)+'.')},
+()=>{const s=r(1,20),d=pick([2,3,4,5,6,7,8,9,10,25]),a=[0,1,2,3].map(i=>s+i*d),n=s+4*d;return mk('Patterns',`What comes next?  ${a.join(', ')}, __`,n,[n+d,n+1,n-1,n+2,n-2,n+2*d],`The pattern adds ${d} each time, so ${a[3]} + ${d} = ${n}.`)},
+()=>{const a=r(2,9),b=r(1,19)*50;return mk('Measurements',`Convert ${a} km ${b} m into metres.`,f(a*1000+b),[f(a*100+b),f(a*10000+b),f(a*1000+b*10),f(a+b),f(a*1000+b/10)],`1 km = 1,000 m, so ${a} km = ${f(a*1000)} m. Add ${b} m.`)},
+()=>{const h=r(2,9);return mk('Time',`How many minutes are in ${h} hours?`,h*60,[h*100,h*30,h*24,h*12,h*60+60],`1 hour = 60 minutes, so ${h} x 60 = ${h*60}.`)},
+()=>{const n=r(6,23);return mk('Information Processing','How many does this tally chart show?',n,[n+1,n-1,n+5,n-5,n+2],'Each group of 5 shows 5. Count the groups, then add the extra lines.',{t:'tally',n})}],
+[G(1),
+()=>{const d=shuf([1,2,3,4,5,6,7,8,9]).slice(0,5),U=new Set();while(U.size<4)U.add(+shuf(d).join(''));const a=[...U],g=Math.random()<.5,ans=g?Math.max(...a):Math.min(...a);return mk('Numbers',`Which is the ${g?'greatest':'smallest'} number?`,f(ans),a.filter(x=>x!=ans).map(f),'Compare the digits from the left, starting with the ten thousands.')},
+()=>{const a=r(100,999),b=r(100,999),s=a+b;return mk('Numbers',`Calculate ${a} + ${b}.`,f(s),[s+10,s-10,s+100,s-100,s+1].map(f),'Add the ones, tens and hundreds, carrying when needed.')},
+()=>{const s=r(2,20),d=pick([3,4,5,6,7,8,9,10]),t=[0,1,2,3,4].map(i=>s+i*d),m=t[2];return mk('Patterns',`Find the missing number: ${t[0]}, ${t[1]}, __, ${t[3]}, ${t[4]}`,m,[m+1,m-1,m+2,m-2,m+d-1,m-d+1],`The pattern adds ${d} each time: ${t[1]} + ${d} = ${m}.`)},
+()=>{const a=r(1,6),b=r(2,18)*5,c=r(1,5),d=r(2,18)*5,t=a*100+b+c*100+d;return mk('Measurements',`Find ${a} m ${b} cm + ${c} m ${d} cm.`,cmf(t),[cmf(t+10),cmf(t-10),cmf(t+100),cmf(t-100),(a+c)+' m '+(b+d)+' cm'],'Add the centimetres first. 100 cm = 1 m, so regroup if needed.')},
+()=>{const h=r(13,23),m=M5(),H=h-12,w=x=>((x+11)%12)+1;return mk('Time',`A train leaves at ${pad(h)}:${pad(m)}. What is this in normal 12-hour time?`,`${H}:${pad(m)} PM`,[`${H}:${pad(m)} AM`,`${w(H+2)}:${pad(m)} PM`,`${w(H-2)}:${pad(m)} PM`,`${w(H+1)}:${pad(m)} PM`,`${w(H+11)}:${pad(m)} AM`],'Subtract 12 from the hour for times after 12:00. It is PM.')},
+()=>{const T=['A','B','C','D'],v=shuf([...Array(40).keys()].map(x=>x+6)).slice(0,4),hi=v.indexOf(Math.max(...v));return mk('Information Processing','The bar graph shows books read by four teams. Which team read the most books?','Team '+T[hi],T.filter((_,i)=>i!=hi).map(x=>'Team '+x),`The tallest bar is the highest: Team ${T[hi]} with ${v[hi]}.`,{t:'bar',l:T.map(x=>'Team '+x),v})}],
+[G(2),
+// clock angle: the reflex angle (360 - angle) is removed from the wrong answers so it can never be a second correct answer
+()=>{const h=r(2,6),a=h*30;return mk('Geometry',`What is the angle between the clock hands at ${h} o'clock?`,a+' degrees',[a+30,a-30,a+60,a+90,a-60].filter(x=>x>0&&x!=360-a).map(x=>x+' degrees'),`Each hour on a clock is 30 degrees. ${h} x 30 = ${a} degrees.`)},
+()=>{const a=r(1000,6999),b=r(1000,6999),s=a+b;return mk('Numbers',`Calculate ${f(a)} + ${f(b)}.`,f(s),[s+10,s-10,s+100,s-100,s+1000,s-1000].map(f),'Add place by place from the ones, carrying when needed.')},
+()=>{const a=r(50000,99999),b=r(10000,a-10000),s=a-b;return mk('Numbers',`Find ${f(a)} - ${f(b)}.`,f(s),[s+10,s-10,s+100,s-100,s+1000,s-1000].map(f),'Subtract place by place and regroup when a digit is too small.')},
+()=>{const s=r(1,6),k=pick([2,3]),t=[0,1,2,3].map(i=>s*k**i),n=s*k**4;return mk('Patterns',`What comes next?  ${t.join(', ')}, __`,n,[n+s,n-s,t[3]+k,n*k,n+k],`Each number is multiplied by ${k}: ${t[3]} x ${k} = ${n}.`)},
+()=>{const a=r(3,9),c=r(1,a-1),b=r(1,8)*5,d=r(b/5+1,19)*5,t=(a*100+b)-(c*100+d);return mk('Measurements',`Find ${a} m ${b} cm - ${c} m ${d} cm.`,cmf(t),[cmf(t+10),cmf(t-10),cmf(t+100),cmf(t-100),(a-c)+' m '+(d-b)+' cm'],'Change 1 m into 100 cm when the centimetres are too small, then subtract.')},
+()=>{const s=r(6,15)*60+M5(),h=r(1,4),m=M5(),e=s+h*60+m;return mk('Time',`A train leaves at ${t24(s)} and travels for ${h} hr ${m} min. When does it arrive?`,t24(e),[t24(e+10),t24(e-10),t24(e+60),t24(e-60),t24(e+20)],`Add the hours first: ${t24(s)} + ${h} hr = ${t24(s+h*60)}. Then add ${m} min.`)},
+()=>{const k=pick([2,3,4,5,10]),n=r(3,9),a=n*k;return mk('Information Processing',`In a pictograph, one circle stands for ${k} goals. How many goals do ${n} circles stand for?`,a,[a+k,a-k,n+k,a+1,a*2],`${n} x ${k} = ${a}.`,{t:'pict',n})}],
+[G(3),
+()=>{const b=r(12,45),p=r(110,260),t=b*p;return mk('Numbers',`A school has ${b} boxes with ${p} pencils in each box. How many pencils are there altogether?`,f(t),[t+100,t-100,t+1000,t-1000,t+p,t-p].map(f),`${b} x ${p} = ${f(t)}.`)},
+()=>{const a=r(1,5),d=r(2,5),k=r(1,3),t=[a];let df=d;for(let i=0;i<4;i++){t.push(t[i]+df);df+=k}const n=t[4]+df;return mk('Patterns',`Find the next number:  ${t.join(', ')}, __`,n,[n+k,n-k,n+1,n-1,n+2*k],`The gaps grow by ${k} each time. The next gap is ${df}, so ${t[4]} + ${df} = ${n}.`)},
+()=>{const a=r(2,6),b=r(1,9)*10,n=r(3,6),t=(a*100+b)*n;return mk('Measurements',`Find ${a} m ${b} cm x ${n}.`,cmf(t),[cmf(t+10),cmf(t-10),cmf(t+100),cmf(t-100),(a*n)+' m '+(b*n)+' cm'],'Change to centimetres, multiply, then change back to metres and centimetres.')},
+()=>{const s=r(6,11)*60+r(0,10)*5,h=r(2,5),m=r(1,11)*5,e=s+h*60+m;return mk('Time',`A train leaves at ${t24(s)} and arrives at ${t24(e)}. How long is the journey?`,dur(h*60+m),[dur(h*60+m+10),dur(h*60+m-10),dur((h+1)*60+m),dur((h-1)*60+m),dur(h*60+60-m)],`Count the hours, then the minutes, from ${t24(s)} to ${t24(e)}.`)},
+// bar graph difference: wrong answers are always above zero
+()=>{const T=['A','B','C','D'],v=shuf([...Array(30).keys()].map(x=>x+8)).slice(0,4);let i=r(0,3),j=(i+r(1,3))%4;if(v[i]<v[j])[i,j]=[j,i];const d=v[i]-v[j];return mk('Information Processing',`The bar graph shows books read. How many more books did Team ${T[i]} read than Team ${T[j]}?`,d,[d+1,d+2,d+3,d-1,d-2,v[i]+v[j]].filter(x=>x>0),`${v[i]} - ${v[j]} = ${d}.`,{t:'bar',l:T.map(x=>'Team '+x),v})},
+()=>{const s=r(2,5),t=r(2,4);return mk('Information Processing',`A team has ${s} different shirts and ${t} different shorts. How many different outfits (1 shirt and 1 shorts) can be listed?`,s*t,[s+t,s*t+1,s*t-1,s*t+2,s*t*2],`List every shirt with every shorts: ${s} x ${t} = ${s*t}.`)}],
+[G(4),
+()=>{const p=r(120,260),n=r(12,40),g=r(100,900),t=p*n-g;return mk('Numbers',`A school buys ${n} boxes with ${p} pencils in each box. It gives away ${g} pencils. How many pencils are left?`,f(t),[t+g*2,p*n+g,t+100,t-100,t+1000,p*n].map(f),`First ${n} x ${p} = ${f(p*n)}. Then subtract ${g}: ${f(t)}.`)},
+()=>{const n=r(6,12);return mk('Patterns',`Squares are made in a row with matchsticks. 1 square uses 4 sticks, 2 squares use 7, 3 squares use 10. How many sticks are needed for ${n} squares?`,3*n+1,[3*n,4*n,3*n+2,3*n-1,3*n+4],`The first square needs 4 sticks and every new square adds 3. So 4 + 3 x ${n-1} = ${3*n+1}.`)},
+()=>{const n=pick([4,5,8,10]),p=r(5,40)*5,t=p*n;return mk('Measurements',`A ribbon is ${cmf(t)} long. It is cut into ${n} equal pieces. How long is each piece?`,cmf(p),[cmf(p+10),cmf(p-10),cmf(p+25),cmf(p*2),cmf(p+50)],`${cmf(t)} = ${f(t)} cm. ${f(t)} divided by ${n} = ${p} cm.`)},
+()=>{const s=r(6,14)*60+M5(),h=r(1,3),m=M5(),w=r(2,6)*5,e=s+h*60+m+w;return mk('Time',`A train leaves at ${t24(s)}. The journey takes ${h} hr ${m} min and it also waits ${w} min at a station. When does it arrive?`,t24(e),[t24(e-w),t24(e+w),t24(e+10),t24(e-10),t24(e+60)],`Add the journey time and the waiting time to ${t24(s)}.`)},
+()=>{const T=['A','B','C','D'],v=[0,1,2,3].map(()=>r(8,40)),s=v[0]+v[1]+v[2]+v[3];return mk('Information Processing','The bar graph shows books read. How many books did all four teams read altogether?',s,[s+1,s-1,s+5,s-5,s+10,s-10],`Add all four bars: ${v.join(' + ')} = ${s}.`,{t:'bar',l:T.map(x=>'Team '+x),v})}]];
+// ---------- difficulty ladder ----------
+// Level 1 (Rookie) is brand new and very easy: small numbers, one-step ideas.
+// Levels 2-4 reuse the original question sets, one step later, so difficulty climbs steadily.
+// Level 5 (Champion) mixes the two hardest sets (multi-step word problems).
+const EASY=[G(0),
+()=>{let n,p,d;do{n=r(100,999);p=r(0,2);d=+String(n)[2-p]}while(d==0||String(n).split(String(d)).length!=2);
+const v=d*10**p,all=[0,1,2,3].filter(k=>k!=p).map(k=>d*10**k),w=p>0?[d,...shuf(all.filter(x=>x!=d)).slice(0,2)]:shuf(all).slice(0,3);
+return mk('Numbers',`What is the place value of ${d} in ${n}?`,f(v),w.map(f),`The digit ${d} is in the ${N[p]} place, so its place value is ${f(v)}.`)},
+()=>{const s=r(1,10),d=pick([2,3,5,10]),a=[0,1,2,3].map(i=>s+i*d),n=s+4*d;return mk('Patterns',`What comes next?  ${a.join(', ')}, __`,n,[n+d,n-d,n+1,n-1,n+2],`The pattern adds ${d} each time, so ${a[3]} + ${d} = ${n}.`)},
+()=>{const a=r(11,59),b=r(11,40),t=a+b;return mk('Numbers',`Calculate ${a} + ${b}.`,t,[t+10,t-10,t+1,t-1,t+2],'Add the ones first, then add the tens.')},
+()=>{const a=r(40,99),b=r(11,a-11),t=a-b;return mk('Numbers',`Calculate ${a} - ${b}.`,t,[t+10,t-10,t+1,t-1,t+2],'Subtract the ones, then subtract the tens.')},
+()=>{const m=r(2,9);return mk('Measurements',`Convert ${m} m into centimetres.`,f(m*100),[m*10,m*1000,m+100,m*100+10,m*100-10].map(f),`1 m = 100 cm, so ${m} x 100 = ${m*100} cm.`)},
+()=>{const s=r(1,8),d=r(1,3),e=s+d;return mk('Time',`A class starts at ${s}:00 and lasts ${d} hour${d>1?'s':''}. At what time does it end?`,`${e}:00`,[`${e+1}:00`,`${e-1}:00`,`${e}:30`,`${s}:30`],`${s}:00 plus ${d} hour${d>1?'s':''} is ${e}:00.`)},
+()=>{const n=r(3,12);return mk('Information Processing','How many does this tally chart show?',n,[n+1,n-1,n+5,n+2,n-2],'Each group of 5 shows 5. Count the groups, then add the extra lines.',{t:'tally',n})},
+()=>{const k=pick([2,5,10]),n=r(2,5),a=n*k;return mk('Information Processing',`In a pictograph, one circle stands for ${k} goals. How many goals do ${n} circles stand for?`,a,[a+k,a-k,n+k,a+1,a*2],`${n} x ${k} = ${a}.`,{t:'pict',n})}];
+const nG=a=>a.slice(1); // drop the geometry builder, each level gets its own geometry set below
+const A=[EASY,[G(1),...nG(OLD[0])],[G(2),...nG(OLD[1])],[G(3),...nG(OLD[2])],[G(4),...nG(OLD[3]),...nG(OLD[4])]];
+// ---------- charts (drawn with SVG) ----------
+function chart(c){
+if(c.t=='bar'){const m=Math.max(...c.v);return `<svg viewBox="0 0 400 150">${c.v.map((v,i)=>{const h=v/m*92,x=18+i*95;return `<rect x="${x}" y="${118-h}" width="70" height="${h}" rx="6" fill="#f6c343"/><text x="${x+35}" y="${111-h}" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">${v}</text><text x="${x+35}" y="140" text-anchor="middle" fill="#cbd5e1" font-size="15">${c.l[i]}</text>`}).join('')}</svg>`}
+if(c.t=='tally'){const g=Math.floor(c.n/5),rm=c.n%5,w=(g+(rm?1:0))*62+10;let s='';for(let i=0;i<g;i++){const x=10+i*62;s+=[0,1,2,3].map(k=>`<line x1="${x+6+k*11}" y1="6" x2="${x+6+k*11}" y2="54" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`).join('')+`<line x1="${x}" y1="48" x2="${x+50}" y2="12" stroke="#f6c343" stroke-width="5" stroke-linecap="round"/>`}for(let k=0;k<rm;k++){const x=10+g*62+6+k*11;s+=`<line x1="${x}" y1="6" x2="${x}" y2="54" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`}return `<svg viewBox="0 0 ${w} 60">${s}</svg>`}
+if(c.t=='pict')return `<svg viewBox="0 0 ${c.n*40+10} 40">${Array.from({length:c.n},(_,i)=>`<circle cx="${25+i*40}" cy="20" r="15" fill="#f6c343" stroke="#fff" stroke-width="2"/>`).join('')}</svg>`;return''}
+// ---------- audio (all sounds are made live in the browser, no files needed) ----------
+let ac,mg,fg,song=1,step=0,nextT=0,tmr,fxOn=true,lvl=0;const MV=.4;
+function AU(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();const cp=ac.createDynamicsCompressor();cp.connect(ac.destination);mg=ac.createGain();mg.gain.value=MV;mg.connect(cp);fg=ac.createGain();fg.gain.value=.9;fg.connect(cp)}if(ac.state=='suspended')ac.resume();return ac}
+const duck=(v,s)=>{if(mg)mg.gain.setTargetAtTime(v,ac.currentTime,s||.08)};
+function osc(t,fr,d,ty,v,dest,f2){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.setValueAtTime(fr,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(dest);o.start(t);o.stop(t+d+.02)}
+function noise(t,d,v,fr,dest,at){const n=ac.sampleRate*d,b=ac.createBuffer(1,n,ac.sampleRate),x=b.getChannelData(0);for(let i=0;i<n;i++)x[i]=Math.random()*2-1;const s=ac.createBufferSource(),fl=ac.createBiquadFilter(),g=ac.createGain();s.buffer=b;fl.type='bandpass';fl.frequency.value=fr;g.gain.setValueAtTime(.001,t);g.gain.linearRampToValueAtTime(v,t+(at||.01));g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(fl).connect(g).connect(dest);s.start(t)}
+// slow tremolo strings (the held, shivering chords of a quiz-show suspense bed)
+function strings(t,n,d,v){const g=ac.createGain(),lp=ac.createBiquadFilter(),l=ac.createOscillator(),lg=ac.createGain();lp.type='lowpass';lp.frequency.value=1400;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+d*.35);g.gain.linearRampToValueAtTime(v*.6,t+d*.9);g.gain.linearRampToValueAtTime(.0001,t+d);l.frequency.value=6.5;lg.gain.value=v*.35;l.connect(lg).connect(g.gain);l.start(t);l.stop(t+d+.05);n.forEach(m=>[-7,7].forEach(c=>{const o=ac.createOscillator();o.type='sawtooth';o.frequency.value=mf(m);o.detune.value=c;o.connect(lp);o.start(t);o.stop(t+d+.05)}));lp.connect(g).connect(mg)}
+function brass(t,n,d,v){const g=ac.createGain(),lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(400,t);lp.frequency.linearRampToValueAtTime(2200,t+.15);g.gain.setValueAtTime(.001,t);g.gain.linearRampToValueAtTime(v,t+.04);g.gain.exponentialRampToValueAtTime(.001,t+d);n.forEach(m=>{const o=ac.createOscillator();o.type='sawtooth';o.frequency.value=mf(m);o.connect(lp);o.start(t);o.stop(t+d+.05)});lp.connect(g).connect(mg)}
+function fx(n){if(!fxOn)return;try{AU();const t=ac.currentTime;
+if(n=='click')osc(t,700,.08,'square',.15,fg);
+if(n=='lock'){osc(t,110,1,'sine',.8,fg,40);osc(t,220,.6,'sawtooth',.12,fg,110);noise(t,1,.25,500,fg,.6)}
+if(n=='tick')osc(t,900,.06,'square',.12,fg);
+if(n=='ok'){[60,64,67,72].forEach((m,i)=>osc(t+i*.09,mf(m),.55,'sawtooth',.1,fg));osc(t+.4,mf(76),1,'triangle',.25,fg);noise(t+.2,1.8,.35,900,fg,.3)}
+if(n=='bad'){osc(t,300,1.1,'sawtooth',.25,fg,60);osc(t+.05,150,1.1,'square',.12,fg,40)}
+if(n=='life'){osc(t,500,.15,'triangle',.25,fg);osc(t+.12,750,.2,'triangle',.25,fg)}
+if(n=='badge')[659,784,988,1319].forEach((x,i)=>osc(t+i*.09,x,.3,'triangle',.22,fg));
+if(n=='fan'){noise(t,3,.7,900,fg,.5);[523,659,784,1047,784,1047,1319].forEach((x,i)=>osc(t+i*.14,x,.35,'sawtooth',.18,fg))}
+if(n=='start'){osc(t,100,.8,'sine',.8,fg,40);[48,55,60,64,67,72].forEach((m,i)=>osc(t+.15+i*.11,mf(m),.5,'sawtooth',.1,fg))}
+if(n=='whistle'){const o=ac.createOscillator(),l=ac.createOscillator(),lg=ac.createGain(),g=ac.createGain();o.frequency.value=2800;l.frequency.value=40;lg.gain.value=120;l.connect(lg).connect(o.frequency);g.gain.setValueAtTime(.3,t);g.gain.setValueAtTime(.3,t+.5);g.gain.exponentialRampToValueAtTime(.001,t+.6);o.connect(g).connect(fg);o.start(t);l.start(t);o.stop(t+.65);l.stop(t+.65)}
+}catch(e){}}
+// Two original tracks in the style of a TV quiz show. Each loops 4 bars; the beat speeds up and adds layers as the level rises.
+const SONGS=[{n:'Hot Seat',bpm:100,tense:1,roots:[40,36,38,35],ch:[[64,67,71],[60,64,67],[62,66,69],[59,63,66]],ping:[83,84,81,80]},
+{n:'Studio Groove',bpm:116,roots:[36,41,43,36],ch:[[60,64,67],[60,65,69],[59,62,67],[60,64,67]]}];
+const mf=m=>440*2**((m-69)/12);
+function tick(){const s=SONGS[song-1];if(!ac||!s)return;const d=60/(s.bpm+lvl*(s.tense?5:2))/2;
+if(nextT<ac.currentTime)nextT=ac.currentTime+.05;
+while(nextT<ac.currentTime+.3){const t=nextT,i=step%8,bar=Math.floor(step/8)%4,root=s.roots[bar],ch=s.ch[bar];
+if(s.tense){
+osc(t,mf(i%2?root+12:root),d*.95,'triangle',i%2?.2:.42,mg);
+if(i%2==0)osc(t,mf(root),d*.9,'sawtooth',.07,mg);
+if(i==0)osc(t,120,.35,'sine',.9,mg,45);
+if(i==4||(lvl>=2&&i==6)||(lvl>=3&&i==2))osc(t,110,.25,'sine',.5,mg,45);
+osc(t,i%2?1900:2500,.025,'square',.025+lvl*.005,mg);
+if(i==0)strings(t,ch,d*8,.045);
+if(i==6){osc(t,mf(s.ping[bar]),d*3,'sine',.1,mg);osc(t+d*1.5,mf(s.ping[bar]),d*3,'sine',.04,mg)}
+if(bar==3&&i==0)brass(t,ch.map(x=>x+12),d*3,.05);
+if(lvl>=3&&bar==3&&i>=4)noise(t,.09,.22,1800,mg)}
+else{
+osc(t,mf(root+[0,12,0,12,7,12,0,12][i]),d*.9,'triangle',.4,mg);
+if(i==0||i==4)osc(t,150,.2,'sine',.9,mg,45);
+if(i==2||i==6)noise(t,.12,.4,1800,mg);
+if(i%2)noise(t,.04,.1,7000,mg);
+if(i%2==0)osc(t,mf(ch[[0,1,2,1][i/2]]+12),d*1.2,'square',.05,mg);
+if(i==0||i==3)brass(t,ch,d*1.6,.05)}
+nextT+=d;step++}}
+function music(){clearInterval(tmr);if(song&&ac){nextT=ac.currentTime+.05;step=0;tmr=setInterval(tick,100)}}
+function songBtn(){AU();song=(song+1)%(SONGS.length+1);music();$('#bs').textContent='Music: '+(song?SONGS[song-1].n:'Off')}
+function fxBtn(b){fxOn=!fxOn;b.textContent='Effects: '+(fxOn?'On':'Off')}
+// ---------- game data ----------
+const LV=[{n:'Rookie',p:10,t:25},{n:'Striker',p:20,t:30},{n:'Captain',p:30,t:35},{n:'Legend',p:40,t:40},{n:'Champion',p:50,t:45}];
+const lvOf=i=>Math.floor(i/3);
+// Level rewards: one is unlocked after every level except the last. With the timer off, the two time rewards become points rewards.
+const REW=[
+{t:'Bonus Time',d:'+10 seconds on every question from now on.',alt:{t:'Bonus Points',d:'+25 points added to your score right now.'}},
+{t:'Double Points',d:'Every question in the next level is worth 2x points.'},
+{t:'Lifelines Refilled',d:'All the lifelines you used come back, ready to use again.'},
+{t:'Unlimited Time',d:'No timer in the final level. Think as long as you need.',alt:{t:'Double Points',d:'Every question in the final level is worth 2x points.'}}];
+const rew=l=>{const x=REW[l];return !S.timerOn&&x.alt?x.alt:x};
+const DBL=()=>S.timerOn?[2]:[2,4],BON=()=>S.timerOn?0:25;
+const mult=l=>DBL().includes(l)?2:1,ptsOf=i=>LV[lvOf(i)].p*mult(lvOf(i));
+const cum=i=>{let c=i>=3?BON():0;for(let j=0;j<=i;j++)c+=ptsOf(j);return c},maxPts=()=>cum(14);
+function grant(l){const P=S.P;if(l==0){if(S.timerOn)P.time+=10;else P.score+=25}if(l==2)P.life={};if(l==3&&S.timerOn)P.inf=4}
+const LIFE={
+fifty:['50:50','Two wrong options disappear. You choose between the correct answer and one wrong answer.','<span>50:50</span>'],
+ask:['Ask a Friend','You get 30 seconds to talk with a friend or classmate. You still make the final choice.','<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 4-8 8-8s8 3 8 8"/></svg>'],
+flip:['Flip the Question','Swap this question for a new one at the same level. You lose no points.','<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.5-5.8M20 12a8 8 0 0 1-13.5 5.8M18 2.5v4.2h-4.2M6 21.5v-4.2h4.2"/></svg>']};
+let S={name:'',timerOn:true,seen:new Set(),last:'',P:null},iv;
+// a question counts as "seen" by its text AND its chart, so graph questions with new data are not blocked
+const qkey=q=>q.q+(q.ch?JSON.stringify(q.ch):'');
+function draw(l){let q,t=0;do{q=pick(A[l])();t++}while(t<60&&(S.seen.has(qkey(q))||q.cat==S.last));if(S.seen.size>800)S.seen.clear();S.seen.add(qkey(q));S.last=q.cat;return q}
+// ---------- class list from Firebase (read-only; same project and codes as the Penalty Cup game) ----------
+const FB={project:'maths-penalty-cup',key:'AIzaSyAMsz-GB8WmGNUYjod6fquQJMYBQPJeOGs'};
+const fbUrl=c=>`https://firestore.googleapis.com/v1/projects/${FB.project}/databases/(default)/documents/classes/${c}?key=${FB.key}`,fmtC=c=>c.slice(0,4)+'-'+c.slice(4);
+let CC={code:'',lib:null,cls:'',msg:'',done:new Set(),skip:new Set(),pool:[],mode:'manual'};try{CC.mode=localStorage.getItem('mc_mode')==='auto'?'auto':'manual'}catch(e){}
+const setMode=m=>{CC.mode=m;try{localStorage.setItem('mc_mode',m)}catch(e){}setup()};
+try{CC.code=localStorage.getItem('pk_code')||''}catch(e){}
+async function loadCode(c){c=(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length!=8){CC.msg='A class code has 8 letters and numbers.';return setup()}
+CC.msg='Loading...';setup();
+try{const r=await fetch(fbUrl(c));if(!r.ok){CC.msg=r.status==404?'Code not found. Check it and try again.':'Could not load (error '+r.status+').';return setup()}
+const j=await r.json();CC.lib=JSON.parse(j.fields.lib.stringValue);CC.code=c;try{localStorage.setItem('pk_code',c)}catch(e){}
+const ks=Object.keys(CC.lib);CC.cls=ks.length==1?ks[0]:(CC.lib[CC.cls]?CC.cls:'');CC.msg=ks.length?'':'That code has no classes yet.'}
+catch(e){CC.msg='Could not reach the cloud. You can still type a name.'}setup()}
+const studentsOf=k=>{const c=CC.lib&&CC.lib[k],out=[],seen=new Set();if(c)c.g.slice(0,c.n).forEach(g=>String(g.txt||'').split('\n').map(x=>x.trim()).filter(Boolean).forEach(n=>{if(!seen.has(n)){seen.add(n);out.push({n,team:g.name})}}));return out};
+function pickCls(i){CC.cls=Object.keys(CC.lib)[i];setup()}
+function ccHTML(){let h='<div class="cc"><div class="lbl">Class</div>';
+if(!CC.lib){h+=`<div class="row"><input id="cd" aria-label="Class code" placeholder="Class code" value="${esc(CC.code?fmtC(CC.code):'')}" onkeydown="if(event.key==='Enter')loadCode(this.value)"><button class="opt" onclick="loadCode($('#cd').value)">Load class</button></div>`}
+else{const ks=Object.keys(CC.lib);h+=`<div class="row">${ks.map((k,i)=>`<button class="opt ${k==CC.cls?'on':''}" onclick="pickCls(${i})">${esc(k)}</button>`).join('')}<button class="opt" onclick="CC.lib=null;CC.cls='';setup()">Change code</button></div>`;
+h+=CC.cls?`<div class="sub">${studentsOf(CC.cls).length} students in ${esc(CC.cls)}. Each student gets one turn, picked at random.</div>`:'<div class="sub">Tap a class to choose it.</div>'}
+if(CC.msg)h+=`<div class="${CC.msg=='Loading...'?'ok':'err'}" style="min-height:0">${esc(CC.msg)}</div>`;
+return h+'</div>'}
+// ---------- auto mode: call students from the class list at random ----------
+function startAuto(){if(!CC.lib||!CC.cls){$('#err').textContent='Load your class code and tap a class first.';return}
+CC.pool=studentsOf(CC.cls);if(!CC.pool.length){$('#err').textContent='This class has no student names.';return}
+CC.done.clear();CC.skip.clear();S.name='';AU();callNext()}
+function skipP(){CC.skip.add(S.name);callNext()}
+function callNext(){closeM();const rem=CC.pool.filter(p=>!CC.done.has(p.n)&&!CC.skip.has(p.n));
+if(!rem.length){modal(`<div class="title" style="font-size:4.4vh">Everyone has played!</div><div class="q2">${CC.done.size} students took a turn${CC.skip.size?', '+CC.skip.size+' skipped (absent)':''}.</div><div class="row"><button class="big" onclick="CC.done.clear();CC.skip.clear();callNext()">Start over</button><button class="no2" onclick="setup()">Back to setup</button></div>`);return}
+const p=pick(rem);S.name=p.n;fx('click');
+modal(`<div class="q2">Next player</div><div class="title" style="font-size:6vh">${esc(p.n)}</div><div class="rk">${esc(p.team)}</div><div class="q2" style="font-size:2.4vh">${rem.length-1} more after this one</div><div class="row"><button class="big" onclick="closeM();begin()">Start</button><button class="no2" onclick="skipP()">Skip (absent)</button><button class="no2" onclick="setup()">Back to setup</button></div>`)}
+// ---------- setup and rules ----------
+function setup(){clearInterval(iv);clearTimeout(S.lt);clearInterval(S.ai);S.P=null;S.paused=false;document.querySelectorAll('.ov').forEach(x=>x.remove());
+app.innerHTML=`<div class="setup"><div class="plate setcard"><div class="pin"><div class="title">Who Wants to Be a Math Champion?</div>
+<div class="sub">One player. 15 questions. 5 levels. Unlock a new reward after every level.</div>
+<div class="lbl">Mode</div><div class="row"><button class="opt ${CC.mode=='manual'?'on':''}" onclick="setMode('manual')">Manual - type a name</button><button class="opt ${CC.mode=='auto'?'on':''}" onclick="setMode('auto')">Auto - call students from class list</button></div>
+${CC.mode=='auto'?ccHTML():`<label class="lbl" for="nm">Player name</label><input id="nm" maxlength="16" placeholder="Type your name" value="${esc(S.name)}" oninput="S.name=this.value" onkeydown="if(event.key=='Enter')toRules()">`}
+<div class="lbl">Question timer</div><div class="row"><button class="opt ${S.timerOn?'on':''}" onclick="S.timerOn=true;setup()">On</button><button class="opt ${S.timerOn?'':'on'}" onclick="S.timerOn=false;setup()">Off (no time pressure)</button></div>
+<div class="err" id="err"></div><button class="big" onclick="${CC.mode=='auto'?'startAuto()':'toRules()'}">${CC.mode=='auto'?'Start auto mode':'Read the rules'}</button></div></div></div>`}
+function toRules(){const n=(S.name||'').trim();if(!n){$('#err').textContent='Please type your name.';return}S.name=n;AU();rules()}
+function rules(){const g=!!S.P;if(g&&!S.locked)S.paused=true;const T=S.timerOn;
+modal(`<div class="title" style="font-size:4vh">Rule Book</div><div class="rg">
+<div><h3>1. How to play</h3>You sit in the hot seat for 15 questions across 5 levels. Tap an answer, then press Lock answer. Explain your thinking, then see if you are right. One wrong answer (or running out of time) ends your game, but you keep the points you have already earned.</div>
+<div><h3>2. Questions get harder</h3>Level 1 (Rookie) has easy questions with small numbers. Every level after that is harder than the one before. Level 5 (Champion) has the toughest multi-step word problems.</div>
+<div><h3>3. Levels and points</h3>${LV.map((l,i)=>`<b>Level ${i+1} - ${l.n}</b> (Q${i*3+1}-${i*3+3}): ${l.p} points each${mult(i)>1?' (x2 = '+l.p*2+' with Double Points)':''}<br>`).join('')}Maximum: ${maxPts()} points.</div>
+<div><h3>4. Badges</h3>A badge is unlocked each time you correctly answer question 3, 6, 9, 12 and 15 (the end of every level). Get all 5 badges and win all 15 questions to become the Math Champion.</div>
+<div style="grid-column:1/-1"><h3>5. Level rewards (unlocked after every level)</h3>${[0,1,2,3].map(i=>`<b>After Level ${i+1} (${LV[i].n}) - ${rew(i).t}:</b> ${rew(i).d}<br>`).join('')}${T?'Bonus time is added on top of the normal time for each level. ':'The timer is off in this game, so the time rewards are replaced by points rewards. '}Rewards are shown as gold tags above the question. Double Points levels are also marked x2 on the points ladder. You only unlock a reward by answering the last question of a level correctly.</div>
+<div><h3>6. Timer</h3>${T?`Time per question: ${LV.map(l=>l.n+' '+l.t+'s').join(', ')}. Bonus time from Level 1 is added after you finish it. If time runs out, the answer counts as wrong. In the final level the timer is removed completely.`:'The timer is off. Take as much thinking time as you need.'} The timer can be switched on or off on the start screen.</div>
+<div><h3>7. Lifelines (once each per game)</h3>${Object.values(LIFE).map(c=>`<b>${c[0]}:</b> ${c[1]}<br>`).join('')}Tap a lifeline to read what it does before using it. Use a lifeline before locking an answer. The reward after Level 3 gives all used lifelines back once.</div>
+<div style="grid-column:1/-1"><h3>8. Fair play</h3>Take thinking time. Explain your reasoning. Use rough paper. Speed is not the only goal: good thinking, effort and learning from mistakes matter most.</div></div>
+<button class="big" style="font-size:3vh;padding:1.2vh 4vh" onclick="${g?'back()':'begin()'}">${g?'Back to game':'Start the game'}</button>`)}
+function back(){S.paused=false;closeM()}
+function begin(){closeM();AU();CC.done.add(S.name);S.P={name:S.name,score:0,badges:[],correct:0,life:{},time:0,inf:-1};S.qi=0;S.last='';S.out=false;music();fx('start');newQ(0)}
+function newQ(l){S.q=draw(l);S.sel=-1;S.locked=false;S.paused=false;S.inf=S.P.inf===l;S.left=LV[l].t+S.P.time;lvl=l;render();startTimer()}
+function startTimer(){clearInterval(iv);if(!S.timerOn||S.inf)return;iv=setInterval(()=>{if(S.paused||S.locked)return;S.left--;const e=$('#tm');if(e){e.textContent=S.left;e.parentNode.classList.toggle('low',S.left<=5)}if(S.left<=5&&S.left>0)fx('tick');if(S.left<=0){clearInterval(iv);reveal(true)}},1000)}
+// ---------- question screen ----------
+function lifeHTML(){const P=S.P;return Object.keys(LIFE).map(k=>`<button class="lf ${P.life[k]?'x':''}" ${P.life[k]||S.locked?'disabled':''} onclick="lifeInfo('${k}')" title="${LIFE[k][0]}" aria-label="${LIFE[k][0]}">${LIFE[k][2]}</button>`).join('')}
+function ladHTML(){return [14,13,12,11,10,9,8,7,6,5,4,3,2,1,0].map(i=>`<div class="rung ${(i+1)%3==0?'ms':''} ${i==S.qi?'on':i<S.qi?'dn':''}"><i>${i+1}</i><span>${LV[lvOf(i)].n}${mult(lvOf(i))>1?' x2':''}</span><b>${cum(i)}</b></div>`).join('')}
+function render(){const P=S.P,q=S.q,l=lvOf(S.qi);
+app.innerHTML=`<div class="top"><div class="who"><small>Player</small><b>${esc(P.name)}</b></div><div class="who"><small>Points</small><b id="pts">${P.score}</b></div><div class="who"><small>Question</small><b>${S.qi+1} / 15</b></div>${S.timerOn?`<div class="tmr"><b id="tm" class="${S.inf?'inf':''}">${S.inf?'&infin;':S.left}</b></div>`:''}<div class="sp"></div><div class="lfs" id="lfs">${lifeHTML()}</div><div class="sp"></div><button class="tb" id="bs" onclick="songBtn()">Music: ${song?SONGS[song-1].n:'Off'}</button><button class="tb" onclick="fxBtn(this)">Effects: ${fxOn?'On':'Off'}</button><button class="tb" onclick="rules()">Rules</button><button class="tb" onclick="newGame()">New game</button></div>
+<div class="main"><div class="qp"><div class="meta"><span class="chip">Level ${l+1}: ${LV[l].n}</span><span class="chip">${q.cat}</span><span class="chip">${ptsOf(S.qi)} points</span>${mult(l)>1?'<span class="chip hot">2x points</span>':''}${S.timerOn&&P.time&&!S.inf?`<span class="chip hot">+${P.time} s bonus time</span>`:''}${S.inf?'<span class="chip hot">Unlimited time</span>':''}</div>${q.ch?`<div class="chart">${chart(q.ch)}</div>`:''}<div class="plate qplate"><div class="pin"><div class="qt ${q.q.length>90?'long':''}">${q.q}</div></div></div>
+<div class="opts">${q.o.map((o,i)=>`<button class="opt-b ${o.length>24?'sm':''}" id="o${i}" onclick="choose(${i})"><span class="in"><span class="ltr">${'ABCD'[i]}:</span><span>${esc(o)}</span></span></button>`).join('')}</div><div class="exp" id="exp"></div>
+<div class="act" id="act"><button class="big" id="lockb" disabled onclick="lock()">Lock answer</button></div></div>
+<div class="lad"><div class="lt">Points ladder</div>${ladHTML()}</div></div>`}
+function choose(i){if(S.locked)return;fx('click');S.sel=i;document.querySelectorAll('.opt-b').forEach((b,k)=>b.classList.toggle('sel',k==i));$('#lockb').disabled=false}
+function lock(){if(S.sel<0||S.locked)return;S.locked=true;clearInterval(iv);fx('lock');duck(.1,.05);$('#lockb').disabled=true;$('#lfs').innerHTML=lifeHTML();S.lt=setTimeout(()=>reveal(false),2000)}
+function reveal(timedOut){if(!S.P)return;S.locked=true;clearInterval(iv);const P=S.P,q=S.q,l=lvOf(S.qi),ok=!timedOut&&S.sel==q.a;
+document.querySelectorAll('.opt-b').forEach((b,k)=>{b.disabled=true;b.classList.remove('sel');if(k==q.a)b.classList.add('ok');else if(k==S.sel)b.classList.add('no');else b.classList.add('dim')});
+if(ok){P.score+=ptsOf(S.qi);P.correct++;fx('ok')}else fx('bad');setTimeout(()=>duck(MV,.4),2600);$('#pts').textContent=P.score;$('#lfs').innerHTML=lifeHTML();
+let t=ok?'Correct! +'+ptsOf(S.qi)+' points. ':(timedOut?'Time is up. ':'Not this time. ')+'The answer is '+'ABCD'[q.a]+': '+q.o[q.a]+'. ';t+=q.e;
+if(!ok)t+='  Game over.';S.out=!ok;if(ok&&(S.qi+1)%3==0){P.badges.push(LV[l].n);t+='  BADGE UNLOCKED: '+LV[l].n+' Badge!'+(S.qi<14?' A new reward awaits you!':'');setTimeout(()=>fx('badge'),900)}
+$('#exp').textContent=t;$('#act').innerHTML=`<button class="big" onclick="nextQ()">${S.out||S.qi==14?'See results':(S.qi+1)%3==0?'Claim reward':'Next question'}</button>`}
+function nextQ(){if(S.out||S.qi>=14)return endRun();if((S.qi+1)%3==0)return unlock();S.qi++;newQ(lvOf(S.qi))}
+// shown after every completed level: the badge plus the reward that was just unlocked
+function unlock(){const l=lvOf(S.qi),x=rew(l),nl=l+1;grant(l);fx('badge');cf(40);const P=S.P,nx=LV[nl];
+modal(`<div class="title" style="font-size:4.4vh">Level ${l+1} complete!</div><div class="rk">${LV[l].n} Badge earned</div>
+<div class="rwd"><small>REWARD UNLOCKED</small><b>${x.t}</b><span>${x.d}</span></div>
+<div class="q2" style="font-size:2.7vh">Next: Level ${nl+1} - ${nx.n}<br>${ptsOf(S.qi+1)} points per question${S.timerOn?' | '+(P.inf===nl?'Unlimited time':(nx.t+P.time)+' seconds each'):''}<br>Questions get harder. Good luck, ${esc(P.name)}!</div>
+<button class="big" style="font-size:3vh;padding:1.2vh 5vh" onclick="closeM();S.qi++;newQ(lvOf(S.qi))">Start Level ${nl+1}</button>`)}
+// ---------- lifelines ----------
+function lifeInfo(k){if(S.locked)return;fx('life');S.paused=true;const o=document.createElement('div');o.className='ov top2';o.id='li';
+o.innerHTML=`<div class="box"><div class="ans">${LIFE[k][0]}</div><div class="q2">${LIFE[k][1]}</div><div class="row"><button class="ok2" onclick="useLife('${k}')">Use it now</button><button class="no2" onclick="$('#li').remove();S.paused=false">Cancel</button></div></div>`;document.body.appendChild(o)}
+function useLife(k){$('#li').remove();const P=S.P,q=S.q;P.life[k]=1;S.paused=false;$('#lfs').innerHTML=lifeHTML();
+if(k=='flip'){newQ(lvOf(S.qi));return}
+if(k=='fifty'){shuf([0,1,2,3].filter(i=>i!=q.a)).slice(0,2).forEach(i=>{$('#o'+i).classList.add('off');if(S.sel==i){S.sel=-1;$('#lockb').disabled=true}})}
+if(k=='ask'){S.paused=true;let s=30;const o=document.createElement('div');o.className='ov top2';o.id='ak';o.innerHTML=`<div class="box"><div class="ans">Ask a Friend</div><div class="q2">Talk together: <b id="as">30</b> seconds</div><button class="ok2" onclick="clearInterval(S.ai);$('#ak').remove();S.paused=false">Done</button></div>`;document.body.appendChild(o);
+S.ai=setInterval(()=>{s--;const e=$('#as');if(!e){clearInterval(S.ai);return}e.textContent=s;if(s<=0){clearInterval(S.ai);fx('whistle')}},1000)}}
+// ---------- results ----------
+function endRun(){clearInterval(iv);const P=S.P,all=!S.out&&P.correct==15;if(all)fx('fan');
+modal(`${all?`<svg viewBox="0 0 120 120" style="height:16vh"><path d="M30 10h60v28c0 20-13 34-30 34S30 58 30 38z" fill="#ffd24a" stroke="#e5a91b" stroke-width="3"/><path d="M30 18H12c0 20 8 30 22 32M90 18h18c0 20-8 30-22 32" fill="none" stroke="#e5a91b" stroke-width="6" stroke-linecap="round"/><rect x="52" y="70" width="16" height="22" fill="#e5a91b"/><rect x="36" y="92" width="48" height="14" rx="4" fill="#ffd24a" stroke="#e5a91b" stroke-width="3"/></svg><div class="title" style="font-size:4.6vh">Math Champion</div>`:`<div class="title" style="font-size:4.6vh">Game over</div>`}
+<div class="ans">${esc(P.name)}</div><div class="q2">${P.score} / ${maxPts()} points | ${P.correct} / 15 correct</div><div class="rk">${P.badges.length?'Badges: '+P.badges.join(', '):'No badge this time'}</div>
+<div class="q2" style="font-size:2.6vh">${all?'The future belongs to curious minds!':'Every mistake is a chance to learn. Try again!'}</div>
+${CC.mode=='auto'&&CC.pool.length?`<div class="row"><button class="big" onclick="callNext()">Next player</button><button class="no2" onclick="closeM();begin()">Play again</button><button class="no2" onclick="setup()">Back to setup</button></div>`:`<div class="row"><button class="big" onclick="closeM();begin()">Play again</button><button class="no2" onclick="setup()">New game</button></div>`}`);if(all)cf(70)}
+function newGame(){fx('click');if(S.P&&!S.locked)S.paused=true;modal(`<div class="ans">Start a new game?</div><div class="q2">Your current score will be lost.</div><div class="row"><button class="ok2" onclick="setup()">Yes, new game</button><button class="no2" onclick="back()">Cancel</button></div>`)}
+function cf(n){const C=['#f6c343','#f97316','#3b82f6','#fff','#22c55e'];for(let i=0;i<n;i++){const d=document.createElement('span');d.className='cf';d.style.cssText=`left:${r(0,98)}vw;background:${pick(C)};animation-delay:${Math.random()*1.6}s`;document.body.appendChild(d);setTimeout(()=>d.remove(),5500)}}
+function modal(h){closeM();const o=document.createElement('div');o.className='ov';o.id='mod';o.innerHTML=`<div class="box">${h}</div>`;document.body.appendChild(o)}
+function closeM(){const o=$('#mod');if(o)o.remove()}
+setup();if(CC.code)loadCode(CC.code);
+</script></body></html>
